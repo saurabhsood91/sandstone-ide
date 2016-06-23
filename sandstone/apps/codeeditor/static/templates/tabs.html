@@ -1,14 +1,25 @@
 <div id="editor-nav-tabs">
+  <a href
+    id="create-new-btn"
+    tooltip="Create New Document"
+    tooltip-trigger="mouseenter"
+    tooltip-placement="right"
+    ng-click="ctrl.openDocument()">
+    <span
+      class="fa fa-lg fa-2x fa-plus"
+      ng-class="{'tab-icon-selected':hoverNew}">
+    </span>
+  </a>
   <tabset>
     <tab
       ng-repeat="tab in ctrl.getOpenDocs()"
       active="tab.active"
-      ng-click="ctrl.openDocument(tab.filepath)">
+      ng-click="ctrl.openDocument(tab.filepath)"
+      tooltip="{{tab.filepath}}"
+      tooltip-trigger="mouseenter"
+      tooltip-placement="bottom">
       <tab-heading>
-        <span
-          tooltip="{{tab.filepath}}"
-          tooltip-trigger="mouseenter"
-          tooltip-placement="bottom">
+        <span>
           {{tab.filename}}
         </span>
         <div class="tab-icon-set">
@@ -69,22 +80,6 @@
             ng-click="ctrl.closeDocument($event,tab)">
           </span>
         </div>
-      </tab-heading>
-    </tab>
-    <tab
-      id="create-new-btn"
-      tooltip="Create New Document"
-      tooltip-trigger="mouseenter"
-      tooltip-placement="left"
-      ng-mouseenter="hoverNew=true"
-      ng-mouseleave="hoverNew=false"
-      active="false"
-      ng-click="ctrl.openDocument()">
-      <tab-heading>
-        <span
-          class="fa fa-lg fa-plus"
-          ng-class="{'tab-icon-selected':hoverNew}">
-        </span>
       </tab-heading>
     </tab>
   </tabset>
