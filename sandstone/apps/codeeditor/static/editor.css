@@ -1,3 +1,7 @@
+.codeeditor {
+  counter-reset: tabs;
+}
+
 /*
  * Sidebar
  */
@@ -104,12 +108,44 @@
 #editor-settings-icon.clicked {
   color: white !important;
 }
-.tab-icon {
+
+#editor-nav-tabs .nav.nav-tabs > li:not(#create-new-btn):nth-last-child(n+5),
+#editor-nav-tabs .nav.nav-tabs > li:not(#create-new-btn):nth-last-child(n+5) ~ li:not(#create-new-btn) {
+  counter-increment: tabs;
+  width: 80px;
+}
+#editor-nav-tabs .nav.nav-tabs > li:not(#create-new-btn) > a {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+#create-new-btn {
+  width: 46px !important;
+}
+
+#editor-nav-tabs .nav.nav-tabs > li > a tab-heading > span {
+  margin-right: 32px;
+}
+.tab-icon-set {
+  position: absolute;
+  top: 10px;
+  right: 0px;
+  background-color: #f8f5f0;
+  padding-right:10px;
+}
+.active .tab-icon-set {
+  background-color: #fff;
+}
+.tab-icon-set > span {
   position: relative;
   /*font-size: 11px;*/
   margin-left: 6px;
   top: -1px;
 }
+/*.tab-icon.dropdown {
+  right: 25px;
+}*/
 .tab-icon ul {
   font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 }
