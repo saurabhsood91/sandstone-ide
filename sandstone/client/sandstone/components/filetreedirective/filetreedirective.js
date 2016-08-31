@@ -9,7 +9,7 @@ angular.module('sandstone.filetreedirective', [])
       leafLevel: '@'
     },
     templateUrl: '/static/core/components/filetreedirective/templates/filetree.html',
-    controller: ['$scope', '$document', '$element', '$timeout', 'FilesystemService', '$rootScope', function($scope, $document, $element, $timeout, FilesystemService, $rootScope) {
+    controller: ['$scope', '$document', '$element', '$timeout', 'FilesystemService', '$rootScope', 'BroadcastService', function($scope, $document, $element, $timeout, FilesystemService, $rootScope, BroadcastService) {
       var self = $scope;
 
       self.treeData = {
@@ -233,7 +233,14 @@ angular.module('sandstone.filetreedirective', [])
       self.getDirContents = function (node, expanded) {
         if(expanded) {
           if(self.leafLevel == "dir") {
-            FilesystemService.getFolders(node, self.populatetreeContents);
+            // FilesystemService.getFolders(node, self.populatetreeContents);
+            var message = {
+                key: 'filetree:expanded',
+                data: {
+                    filepath: node.filepath
+                }
+            };
+            BroadcastService.sendMessage(message);
           } else if(self.leafLevel == "file") {
             FilesystemService.getFiles(node, self.populatetreeContents);
           }

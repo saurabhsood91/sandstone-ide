@@ -8,3 +8,5 @@ SIGNALS_HANDLED = (
 )
 
 dispatcher.connect(filetree_init, signal='filetree:init')
+
+dispatcher.connect(filetree_expanded, signal='filetree:expanded')
