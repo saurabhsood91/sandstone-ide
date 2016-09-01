@@ -1,5 +1,5 @@
 import os
-import sandstone.apps.filebrowser.signals
+import signals
 
 APP_SPECIFICATION = {
     'APP_DESCRIPTION': {
