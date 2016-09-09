@@ -1,4 +1,8 @@
 from pydispatch import dispatcher
+from websocket import create_connection
+import json
+import tornado.escape
+from sandstone.lib.websocket_client import WebSocketClient
 
 # TODO This seems a little redundant
 # TODO find a better way
@@ -10,8 +14,22 @@ SIGNALS_HANDLED = (
 def filetree_init(sender):
     from posixfs import PosixFS
     # get the list of root directories
-    root_dirs = PosixFS.list_root_paths()
-    # TODO send the data back to the client
+    root_paths = PosixFS.list_root_paths()
+    root_nodes = []
+    for r in root_paths:
+        root_nodes.append({
+            'type': 'dir',
+            'filepath': r,
+            'filename': r
+        })
+    message = {
+        'key': 'filetree:root_dirs',
+        'data': {
+            'root_dirs': root_nodes
+        }
+    }
+    ws = WebSocketClient(data=message)
+    ws.connect('ws://localhost:8888/messages')
 
 def filetree_expanded(sender):
     print sender
