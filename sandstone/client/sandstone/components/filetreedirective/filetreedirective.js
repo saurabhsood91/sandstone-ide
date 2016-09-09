@@ -40,9 +40,11 @@ angular.module('sandstone.filetreedirective', [])
         //   FilesystemService.getFolders({filepath: ''}, self.populateTreeData);
         // }
         $rootScope.$on('filetree:root_dirs', function(e, data) {
-            self.populateTreeData(data.root_dirs);
+
             // $rootScope.$digest();
-            self.$apply();
+            self.$apply(function(){
+                self.populateTreeData(data.root_dirs);
+            });
         });
         var message = {
             key: 'filetree:init',
@@ -59,9 +61,9 @@ angular.module('sandstone.filetreedirective', [])
           self.pastedFiles(newDirPath);
         });
         $rootScope.$on('filetree:got_contents', function(e, data) {
-            self.populateTreeData(data.contents);
-            // $rootScope.$digest();
-            self.$apply();
+            self.$apply(function(){
+                self.populatetreeContents(data.contents, data.node);
+            });
         });
       };
       self.initializeFiletree();
@@ -146,7 +148,8 @@ angular.module('sandstone.filetreedirective', [])
         return false;
       };
 
-      self.populatetreeContents = function(data, status, headers, config, node) {
+      self.populatetreeContents = function(data, node) {
+          var existingNode = self.getNodeFromPath(node.filepath, self.treeData.filetreeContents);
           var matchedNode;
           var currContents = self.getFilepathsForDir(node.filepath);
           for (var i=0;i<data.length;i++) {
@@ -158,7 +161,7 @@ angular.module('sandstone.filetreedirective', [])
               currContents.splice(currContents.indexOf(data[i].filepath), 1);
             } else {
               data[i].children = [];
-              node.children.push(data[i]);
+              existingNode.children.push(data[i]);
             }
           }
           var index;
@@ -166,6 +169,7 @@ angular.module('sandstone.filetreedirective', [])
             matchedNode = self.getNodeFromPath(currContents[i],self.treeData.filetreeContents);
             self.removeNodeFromFiletree(matchedNode);
           }
+          console.log(self.treeData.filetreeContents);
         };
 
       self.updateFiletree = function () {
@@ -261,7 +265,7 @@ angular.module('sandstone.filetreedirective', [])
             var message = {
                 key: 'filetree:expanded',
                 data: {
-                    filepath: node.filepath,
+                    node: node,
                     dirs: false
                 }
             };
