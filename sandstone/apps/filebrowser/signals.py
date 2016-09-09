@@ -3,6 +3,7 @@ from websocket import create_connection
 import json
 import tornado.escape
 from sandstone.lib.websocket_client import WebSocketClient
+from sandstone.lib.handlers.broadcast import BroadcastManager
 
 # TODO This seems a little redundant
 # TODO find a better way
@@ -28,12 +29,43 @@ def filetree_init(sender):
             'root_dirs': root_nodes
         }
     }
-    ws = WebSocketClient(data=message)
-    ws.connect('ws://localhost:8888/messages')
+    # ws = WebSocketClient(data=message)
+    # ws.connect('ws://localhost:8888/messages')
+    BroadcastManager.broadcast(message)
 
 def filetree_expanded(sender):
-    print sender
-    print 'Filetree Expanded'
+    from posixfs import PosixFS
+    filepath = sender['filepath']
+    needs_dirs = sender['dirs']
+    dir_contents = PosixFS.get_dir_contents(filepath)
+
+    contents = []
+    if needs_dirs:
+        for node in dir_contents:
+            if node[2]:
+                contents.append({
+                    'type': 'file',
+                    'filepath': node[1],
+                    'filename': node[0]
+                })
+    else:
+        for node in dir_contents:
+            if node[2]:
+                filetype = 'dir'
+            else:
+                filetype = 'file'
+            contents.append({
+                'type': filetype,
+                'filepath': node[1],
+                'filename': node[0]
+            })
+    message = {
+        'key': 'filetree:got_contents',
+        'data': {
+            'contents': contents
+        }
+    }
+    BroadcastManager.broadcast(message)
 
 # Connect signals
 dispatcher.connect(filetree_init, signal='filetree:init')

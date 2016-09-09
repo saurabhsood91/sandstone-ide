@@ -31,7 +31,6 @@ angular.module('sandstone.filetreedirective', [])
           data[i].children = [];
         }
         self.treeData.filetreeContents = data;
-        console.log(self.treeData.filetreeContents);
       };
 
       self.initializeFiletree = function () {
@@ -41,9 +40,9 @@ angular.module('sandstone.filetreedirective', [])
         //   FilesystemService.getFolders({filepath: ''}, self.populateTreeData);
         // }
         $rootScope.$on('filetree:root_dirs', function(e, data) {
-            // console.log('Got Root Dirs');
-            // console.log(data);
             self.populateTreeData(data.root_dirs);
+            // $rootScope.$digest();
+            self.$apply();
         });
         var message = {
             key: 'filetree:init',
@@ -58,6 +57,11 @@ angular.module('sandstone.filetreedirective', [])
         });
         $rootScope.$on('pastedFiles', function(e, newDirPath){
           self.pastedFiles(newDirPath);
+        });
+        $rootScope.$on('filetree:got_contents', function(e, data) {
+            self.populateTreeData(data.contents);
+            // $rootScope.$digest();
+            self.$apply();
         });
       };
       self.initializeFiletree();
@@ -253,7 +257,15 @@ angular.module('sandstone.filetreedirective', [])
             };
             BroadcastService.sendMessage(message);
           } else if(self.leafLevel == "file") {
-            FilesystemService.getFiles(node, self.populatetreeContents);
+            // FilesystemService.getFiles(node, self.populatetreeContents);
+            var message = {
+                key: 'filetree:expanded',
+                data: {
+                    filepath: node.filepath,
+                    dirs: false
+                }
+            };
+            BroadcastService.sendMessage(message);
           }
         }
       };
