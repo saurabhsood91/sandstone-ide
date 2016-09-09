@@ -1,5 +1,4 @@
 from pydispatch import dispatcher
-from websocket import create_connection
 import json
 import tornado.escape
 from sandstone.lib.websocket_client import WebSocketClient
@@ -9,8 +8,6 @@ from sandstone.lib.websocket_client import WebSocketClient
 SIGNALS_HANDLED = (
     'filetree:init',
 )
-
-
 
 # Receivers
 def filetree_init(sender):
@@ -32,6 +29,7 @@ def filetree_init(sender):
     }
     ws = WebSocketClient(data=message)
     ws.connect('ws://localhost:8888/messages')
+
 
 def filetree_expanded(sender):
     print sender
