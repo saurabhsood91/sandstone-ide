@@ -31,14 +31,25 @@ angular.module('sandstone.filetreedirective', [])
           data[i].children = [];
         }
         self.treeData.filetreeContents = data;
+        console.log(self.treeData.filetreeContents);
       };
 
       self.initializeFiletree = function () {
-        if(self.leafLevel == "file") {
-          FilesystemService.getFiles('', self.populateTreeData);
-        } else if(self.leafLevel == "dir") {
-          FilesystemService.getFolders({filepath: ''}, self.populateTreeData);
-        }
+        // if(self.leafLevel == "file") {
+        //   FilesystemService.getFiles('', self.populateTreeData);
+        // } else if(self.leafLevel == "dir") {
+        //   FilesystemService.getFolders({filepath: ''}, self.populateTreeData);
+        // }
+        $rootScope.$on('filetree:root_dirs', function(e, data) {
+            // console.log('Got Root Dirs');
+            // console.log(data);
+            self.populateTreeData(data.root_dirs);
+        });
+        var message = {
+            key: 'filetree:init',
+            data: {}
+        };
+        BroadcastService.sendMessage(message);
         $rootScope.$on('refreshFiletree', function() {
           self.updateFiletree();
         });
