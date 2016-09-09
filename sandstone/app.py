@@ -23,7 +23,6 @@ from filewatcher import Filewatcher
 class SandstoneApplication(tornado.web.Application):
     filewatcher_instance = Filewatcher()
     def __init__(self, *args, **kwargs):
-        self.broadcast_manager = BroadcastManager()
         app_static_handlers = []
         for spec in get_installed_app_static_specs():
             s_url = r"/static/{}/(.*)".format(spec[0])
