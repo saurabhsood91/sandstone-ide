@@ -35,7 +35,8 @@ def filetree_init(sender):
 
 def filetree_expanded(sender):
     from posixfs import PosixFS
-    filepath = sender['filepath']
+    filenode = sender['node']
+    filepath = filenode['filepath']
     needs_dirs = sender['dirs']
     dir_contents = PosixFS.get_dir_contents(filepath)
 
@@ -62,7 +63,8 @@ def filetree_expanded(sender):
     message = {
         'key': 'filetree:got_contents',
         'data': {
-            'contents': contents
+            'contents': contents,
+            'node': filenode
         }
     }
     BroadcastManager.broadcast(message)
