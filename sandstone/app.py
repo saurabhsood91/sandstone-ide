@@ -17,11 +17,9 @@ from sandstone.lib.app_loader import get_installed_app_static_specs
 from sandstone.lib.handlers.broadcast import BroadcastManager
 import sandstone.urls
 from sandstone.urls import URL_SCHEMA
-from filewatcher import Filewatcher
 
 
 class SandstoneApplication(tornado.web.Application):
-    filewatcher_instance = Filewatcher()
     def __init__(self, *args, **kwargs):
         app_static_handlers = []
         for spec in get_installed_app_static_specs():
