@@ -2,7 +2,7 @@ from pydispatch import dispatcher
 import json
 import tornado.escape
 from sandstone.lib.websocket_client import WebSocketClient
-from sandstone.lib.handlers.broadcast import BroadcastManager
+from sandstone.lib.broadcast.manager import BroadcastManager
 
 # TODO This seems a little redundant
 # TODO find a better way
