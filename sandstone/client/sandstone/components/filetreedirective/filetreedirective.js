@@ -34,14 +34,7 @@ angular.module('sandstone.filetreedirective', [])
       };
 
       self.initializeFiletree = function () {
-        // if(self.leafLevel == "file") {
-        //   FilesystemService.getFiles('', self.populateTreeData);
-        // } else if(self.leafLevel == "dir") {
-        //   FilesystemService.getFolders({filepath: ''}, self.populateTreeData);
-        // }
         $rootScope.$on('filetree:root_dirs', function(e, data) {
-
-            // $rootScope.$digest();
             self.$apply(function(){
                 self.populateTreeData(data.root_dirs);
             });
@@ -252,16 +245,15 @@ angular.module('sandstone.filetreedirective', [])
       self.getDirContents = function (node, expanded) {
         if(expanded) {
           if(self.leafLevel == "dir") {
-            // FilesystemService.getFolders(node, self.populatetreeContents);
             var message = {
                 key: 'filetree:expanded',
                 data: {
-                    filepath: node.filepath
+                    node: node,
+                    dirs: true,
                 }
             };
             BroadcastService.sendMessage(message);
           } else if(self.leafLevel == "file") {
-            // FilesystemService.getFiles(node, self.populatetreeContents);
             var message = {
                 key: 'filetree:expanded',
                 data: {
