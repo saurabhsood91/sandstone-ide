@@ -45,7 +45,7 @@ def filetree_expanded(sender):
         for node in dir_contents:
             if node[2]:
                 contents.append({
-                    'type': 'file',
+                    'type': 'dir',
                     'filepath': node[1],
                     'filename': node[0]
                 })
