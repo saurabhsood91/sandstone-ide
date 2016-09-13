@@ -64,6 +64,9 @@ angular.module('sandstone.filetreedirective', [])
         $rootScope.$on('filetree:files_deleted', function(e, data) {
             self.updateFiletree();
         });
+        $rootScope.$on('filetree:file_renamed', function(e, data) {
+            self.updateFiletree();
+        });
         $rootScope.$on('filetree:next_untitled_dir', function(e, data) {
             var message = {
                 key: 'filetree:create_new_dir',

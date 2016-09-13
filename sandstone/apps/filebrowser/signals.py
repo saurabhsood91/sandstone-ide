@@ -148,6 +148,26 @@ def delete_files(sender):
     }
     BroadcastManager.broadcast(message)
 
+def rename_file(sender):
+    from posixfs import PosixFS
+    filepath = sender['filepath']
+    new_name = sender['newFileName']
+
+    if os.path.isdir(filepath):
+        basepath = os.path.split(os.path.dirname(filepath))[0]
+        newpath = os.path.join(basepath,new_name,'')
+    else:
+        basepath = os.path.dirname(filepath)
+        newpath = os.path.join(basepath,new_name)
+    PosixFS.rename_file(filepath, newpath)
+    message = {
+        'key': 'filetree:file_renamed',
+        'data': {
+            'newpath': newpath
+        }
+    }
+    BroadcastManager.broadcast(message)
+
 # Connect signals
 dispatcher.connect(filetree_init, signal='filetree:init')
 dispatcher.connect(filetree_expanded, signal='filetree:expanded')
@@ -156,3 +176,4 @@ dispatcher.connect(create_new_file, signal='filetree:create_new_file')
 dispatcher.connect(get_untitled_dir, signal='filetree:get_untitled_dir')
 dispatcher.connect(create_new_dir, signal='filetree:create_new_dir')
 dispatcher.connect(delete_files, signal='filetree:delete_files')
+dispatcher.connect(rename_file, signal='filetree:rename')
