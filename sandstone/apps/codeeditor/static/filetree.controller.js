@@ -147,12 +147,6 @@ angular.module('sandstone.editor')
     $rootScope.$emit('pastedFiles', newDirPath);
   };
 
-  self.fileRenamed = function(data, status, headers, config, node) {
-    $rootScope.$emit('fileRenamed', node.filepath, data.result);
-    self.updateFiletree();
-    $log.debug('POST: ', data.result);
-  };
-
   self.renameFile = function () {
     var renameModalInstance = $modal.open({
       templateUrl: '/static/editor/templates/rename-modal.html',
@@ -169,7 +163,14 @@ angular.module('sandstone.editor')
     renameModalInstance.result.then(function (newFileName) {
       $log.debug('Files renamed at: ' + new Date());
       var node = self.treeData.selectedNodes[0];
-      FilesystemService.renameFile(newFileName, node, self.fileRenamed);
+      var message = {
+          key: 'filetree:rename',
+          data: {
+              newFileName: newFileName,
+              filepath: node.filepath
+          }
+      };
+      BroadcastService.sendMessage(message);
     }, function () {
       $log.debug('Modal dismissed at: ' + new Date());
     });
