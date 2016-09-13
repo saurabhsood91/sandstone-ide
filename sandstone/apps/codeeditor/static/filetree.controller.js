@@ -132,19 +132,22 @@ angular.module('sandstone.editor')
     $log.debug('Copied ', i, ' files to clipboard: ', self.clipboard);
   };
 
-  // Callback for invocation to FilesystemService pasteFile method
-  self.pastedFiles = function(data, status, headers, config, node){
-    $log.debug('POST: ', data.result);
-  };
-
   self.pasteFiles = function () {
     var i;
     var newDirPath = self.treeData.selectedNodes[0].filepath;
-    for (i=0;i<self.clipboard.length;i++) {
-      FilesystemService.pasteFile(self.clipboard[i].filepath, newDirPath + self.clipboard[i].filename, self.pastedFiles);
-    }
+    var copiedNodes = [];
+    self.clipboard.forEach(function(node) {
+        copiedNodes.push(node);
+    });
+    var message = {
+        key: 'filetree:paste_files',
+        data: {
+            nodes: copiedNodes,
+            newDirPath: newDirPath
+        }
+    };
+    BroadcastService.sendMessage(message);
     self.clipboard = [];
-    $rootScope.$emit('pastedFiles', newDirPath);
   };
 
   self.renameFile = function () {

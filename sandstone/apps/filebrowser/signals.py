@@ -168,6 +168,19 @@ def rename_file(sender):
     }
     BroadcastManager.broadcast(message)
 
+def paste_files(sender):
+    from posixfs import PosixFS
+    nodes = sender['nodes']
+    new_dir = sender['newDirPath']
+
+    for node in nodes:
+        PosixFS.copy_file(node['filepath'], new_dir + node['filename'])
+    message = {
+        'key': 'filetree:files_pasted',
+        'data': {}
+    }
+    BroadcastManager.broadcast(message)
+
 # Connect signals
 dispatcher.connect(filetree_init, signal='filetree:init')
 dispatcher.connect(filetree_expanded, signal='filetree:expanded')
@@ -177,3 +190,4 @@ dispatcher.connect(get_untitled_dir, signal='filetree:get_untitled_dir')
 dispatcher.connect(create_new_dir, signal='filetree:create_new_dir')
 dispatcher.connect(delete_files, signal='filetree:delete_files')
 dispatcher.connect(rename_file, signal='filetree:rename')
+dispatcher.connect(paste_files, signal='filetree:paste_files')

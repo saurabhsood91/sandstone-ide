@@ -47,9 +47,6 @@ angular.module('sandstone.filetreedirective', [])
         $rootScope.$on('refreshFiletree', function() {
           self.updateFiletree();
         });
-        $rootScope.$on('pastedFiles', function(e, newDirPath){
-          self.pastedFiles(newDirPath);
-        });
         $rootScope.$on('filetree:got_contents', function(e, data) {
             self.$apply(function(){
                 self.populatetreeContents(data.contents, data.node);
@@ -65,6 +62,9 @@ angular.module('sandstone.filetreedirective', [])
             self.updateFiletree();
         });
         $rootScope.$on('filetree:file_renamed', function(e, data) {
+            self.updateFiletree();
+        });
+        $rootScope.$on('filetree:files_pasted', function(e, data) {
             self.updateFiletree();
         });
         $rootScope.$on('filetree:next_untitled_dir', function(e, data) {
@@ -151,14 +151,6 @@ angular.module('sandstone.filetreedirective', [])
         return false;
       };
 
-      self.pastedFiles = function(newDirPath) {
-        if (!self.isExpanded(newDirPath)) {
-          var node = self.getNodeFromPath(newDirPath,self.treeData.filetreeContents);
-          self.treeData.expandedNodes.push(node);
-        }
-        self.updateFiletree();
-      };
-
       self.isDisplayed = function (filepath) {
         for (var i=0;i<self.treeData.filetreeContents.length;i++) {
           if (self.treeData.filetreeContents[i].filepath === filepath) {
@@ -196,14 +188,6 @@ angular.module('sandstone.filetreedirective', [])
         for (var i=0;i<self.treeData.expandedNodes.length;i++) {
           self.getDirContents(self.treeData.expandedNodes[i], true);
         }
-      };
-
-      // Callback for invocation to FilesystemService renameFile method
-      self.fileRenamed = function(data, status, headers, config, node) {
-        $rootScope.$emit('fileRenamed', node.filepath, data.result);
-        self.removeNodeFromFiletree(node);
-        self.updateFiletree();
-        $log.debug('POST: ', data.result);
       };
 
       self.multiSelection = false;
