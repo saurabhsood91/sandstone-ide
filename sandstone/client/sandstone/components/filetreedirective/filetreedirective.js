@@ -58,6 +58,30 @@ angular.module('sandstone.filetreedirective', [])
                 self.populatetreeContents(data.contents, data.node);
             });
         });
+        $rootScope.$on('filetree:created_file', function(e, data) {
+            self.updateFiletree();
+        });
+        $rootScope.$on('filetree:created_new_dir', function(e, data) {
+            self.updateFiletree();
+        });
+        $rootScope.$on('filetree:next_untitled_dir', function(e, data) {
+            var message = {
+                key: 'filetree:create_new_dir',
+                data: {
+                    dirpath: data.dirpath
+                }
+            };
+            BroadcastService.sendMessage(message);
+        });
+        $rootScope.$on('filetree:next_untitled_file', function(e, data) {
+            var message = {
+                key: 'filetree:create_new_file',
+                data: {
+                    'filepath': data.filepath
+                }
+            };
+            BroadcastService.sendMessage(message);
+        });
       };
       self.initializeFiletree();
       self.getNodeFromPath = function (filepath, nodeList) {
@@ -162,7 +186,6 @@ angular.module('sandstone.filetreedirective', [])
             matchedNode = self.getNodeFromPath(currContents[i],self.treeData.filetreeContents);
             self.removeNodeFromFiletree(matchedNode);
           }
-          console.log(self.treeData.filetreeContents);
         };
 
       self.updateFiletree = function () {

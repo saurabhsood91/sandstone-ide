@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('sandstone.editor')
-.controller('FiletreeCtrl', ['$modal', '$log', 'EditorService', '$rootScope', 'FilesystemService', function($modal,$log, EditorService, $rootScope, FilesystemService){
+.controller('FiletreeCtrl', ['$modal', '$log', 'EditorService', '$rootScope', 'FilesystemService', 'BroadcastService', function($modal,$log, EditorService, $rootScope, FilesystemService, BroadcastService){
   var self = this;
   self.treeData = {
     filetreeContents: [
@@ -44,15 +44,6 @@ angular.module('sandstone.editor')
     $rootScope.$emit('refreshFiletree');
   };
 
-  // Callback of invocation to FilesystemService to get the next Untitled FIle
-  // Invoke the FilesystemService to create the new file
-  self.gotNewUntitledFile = function(data, status, headers, config) {
-    $log.debug('GET: ', data);
-    var newFilePath = data.result;
-    // Post back new file to backend
-    FilesystemService.createNewFile(newFilePath, self.createFileCallback);
-  };
-
   // Callback for getting the next duplicated file for selected file
   self.gotNextDuplicateFile = function(data, status, headers, config) {
     $log.debug('GET: ', data);
@@ -69,11 +60,24 @@ angular.module('sandstone.editor')
   self.createNewFile = function () {
     //Invokes filesystem service to create a new file
     var selectedDir = self.treeData.selectedNodes[0].filepath;
-    FilesystemService.getNextUntitledFile(selectedDir, self.gotNewUntitledFile);
+    var message = {
+        'key': 'filetree:get_untitled_file',
+        'data': {
+            'filepath': selectedDir
+        }
+    };
+    BroadcastService.sendMessage(message);
   };
   self.createNewDir = function () {
     var selectedDir = self.treeData.selectedNodes[0].filepath;
-    FilesystemService.getNextUntitledDir(selectedDir, self.gotNewUntitledDir);
+    // FilesystemService.getNextUntitledDir(selectedDir, self.gotNewUntitledDir);
+    var message = {
+        'key': 'filetree:get_untitled_dir',
+        'data': {
+            'dirpath': selectedDir
+        }
+    };
+    BroadcastService.sendMessage(message);
   };
   self.createDuplicate = function () {
     var selectedFile = self.treeData.selectedNodes[0].filepath;
