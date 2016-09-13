@@ -3,6 +3,7 @@ import json
 import tornado.escape
 from sandstone.lib.websocket_client import WebSocketClient
 from sandstone.lib.broadcast.manager import BroadcastManager
+import os
 
 # TODO This seems a little redundant
 # TODO find a better way
@@ -69,7 +70,74 @@ def filetree_expanded(sender):
     }
     BroadcastManager.broadcast(message)
 
+def get_untitled_filename(sender):
+    from posixfs import PosixFS
+    filepath = sender['filepath']
+    if filepath:
+        index = 0
+        fileExists = True
+        while fileExists:
+            index += 1
+            filename = 'Untitled' + str(index)
+            newFilePath = os.path.join(filepath,filename)
+            fileExists = PosixFS.file_exists(newFilePath)
+        message = {
+            'key': 'filetree:next_untitled_file',
+            'data': {
+                'filepath': newFilePath
+            }
+        }
+        BroadcastManager.broadcast(message)
+
+def create_new_file(sender):
+    from posixfs import PosixFS
+    filepath = sender['filepath']
+    if filepath:
+        created_filepath = PosixFS.create_file(filepath)
+        message = {
+            'key': 'filetree:created_file',
+            'data': {
+                'filepath': created_filepath
+            }
+        }
+        BroadcastManager.broadcast(message)
+
+def get_untitled_dir(sender):
+    from posixfs import PosixFS
+    dirpath = sender['dirpath']
+    if dirpath:
+        index = 0
+        dirExists = True
+        while dirExists:
+            index+=1
+            dirname = 'UntitledFolder' + str(index)
+            newDirPath = os.path.join(dirpath, dirname,'')
+            dirExists = PosixFS.file_exists(newDirPath)
+        message = {
+            'key': 'filetree:next_untitled_dir',
+            'data': {
+                'dirpath': newDirPath
+            }
+        }
+        BroadcastManager.broadcast(message)
+
+def create_new_dir(sender):
+    from posixfs import PosixFS
+    dirpath = sender['dirpath']
+    if dirpath:
+        created_dirpath = PosixFS.create_directory(dirpath)
+        message = {
+            'key': 'filetree:created_new_dir',
+            'data': {
+                'dirpath': created_dirpath
+            }
+        }
+        BroadcastManager.broadcast(message)
+
 # Connect signals
 dispatcher.connect(filetree_init, signal='filetree:init')
-
 dispatcher.connect(filetree_expanded, signal='filetree:expanded')
+dispatcher.connect(get_untitled_filename, signal='filetree:get_untitled_file')
+dispatcher.connect(create_new_file, signal='filetree:create_new_file')
+dispatcher.connect(get_untitled_dir, signal='filetree:get_untitled_dir')
+dispatcher.connect(create_new_dir, signal='filetree:create_new_dir')
