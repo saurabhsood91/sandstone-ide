@@ -47,9 +47,6 @@ angular.module('sandstone.filetreedirective', [])
         $rootScope.$on('refreshFiletree', function() {
           self.updateFiletree();
         });
-        $rootScope.$on('deletedFile', function(e, data, status, headers, config, node){
-          self.deletedFile(data, status, headers, config, node);
-        });
         $rootScope.$on('pastedFiles', function(e, newDirPath){
           self.pastedFiles(newDirPath);
         });
@@ -62,6 +59,9 @@ angular.module('sandstone.filetreedirective', [])
             self.updateFiletree();
         });
         $rootScope.$on('filetree:created_new_dir', function(e, data) {
+            self.updateFiletree();
+        });
+        $rootScope.$on('filetree:files_deleted', function(e, data) {
             self.updateFiletree();
         });
         $rootScope.$on('filetree:next_untitled_dir', function(e, data) {
@@ -201,28 +201,6 @@ angular.module('sandstone.filetreedirective', [])
         self.removeNodeFromFiletree(node);
         self.updateFiletree();
         $log.debug('POST: ', data.result);
-      };
-
-      // Callback for invocation to FilesystemService deleteFile method
-      self.deletedFile = function(data, status, headers, config, node) {
-        // $log.debug('DELETE: ', data.result);
-        var node = self.getNodeFromPath(data.filepath,self.treeData.filetreeContents);
-        self.removeNodeFromFiletree(node);
-        $rootScope.$emit('fileDeleted', data.filepath);
-        self.updateFiletree();
-      };
-
-      // Callback for getting a new untitled directory name from FilesystemService
-      self.gotNewUntitledDir = function(data, status, headers, config) {
-        $log.debug('GET: ', data);
-        var newDirPath = data.result;
-        FilesystemService.createNewDir(newDirPath, self.createdNewDir);
-      };
-
-      // Callback for creating new directory
-      self.createdNewDir = function(data, status, headers, config) {
-        $log.debug('POST: ', data);
-        self.updateFiletree();
       };
 
       self.multiSelection = false;

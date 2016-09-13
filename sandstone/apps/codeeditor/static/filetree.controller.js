@@ -44,13 +44,6 @@ angular.module('sandstone.editor')
     $rootScope.$emit('refreshFiletree');
   };
 
-  // Callback for getting the next duplicated file for selected file
-  self.gotNextDuplicateFile = function(data, status, headers, config) {
-    $log.debug('GET: ', data);
-     var newFilePath = data.result;
-     FilesystemService.duplicateFile(data.originalFile, newFilePath, self.duplicatedFile);
-  };
-
   // Callback for duplicating a file
   self.duplicatedFile = function(data, status, headers, config) {
     $log.debug('Copied: ', data.result);
@@ -110,12 +103,18 @@ angular.module('sandstone.editor')
     });
 
     self.deleteModalInstance.result.then(function () {
-      $log.debug('Files deleted at: ' + new Date());
-      for (var i=0;i<self.treeData.selectedNodes.length;i++) {
-        var filepath = self.treeData.selectedNodes[i].filepath;
-        FilesystemService.deleteFile(filepath, self.deletedFile);
-        self.deleteModalInstance = null;
-      }
+        $log.debug('Files deleted at: ' + new Date());
+        var selectedFiles = [];
+        self.treeData.selectedNodes.forEach(function(node) {
+            selectedFiles.push(node.filepath);
+        });
+        var message = {
+            key: 'filetree:delete_files',
+            data: {
+                files: selectedFiles
+            }
+        };
+        BroadcastService.sendMessage(message);
     }, function () {
       $log.debug('Modal dismissed at: ' + new Date());
       self.deleteModalInstance = null;
