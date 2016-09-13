@@ -134,6 +134,20 @@ def create_new_dir(sender):
         }
         BroadcastManager.broadcast(message)
 
+def delete_files(sender):
+    from posixfs import PosixFS
+    files_to_delete = sender['files']
+
+    for f in files_to_delete:
+        PosixFS.delete_file(f)
+    message = {
+        'key': 'filetree:files_deleted',
+        'data': {
+            'files': files_to_delete
+        }
+    }
+    BroadcastManager.broadcast(message)
+
 # Connect signals
 dispatcher.connect(filetree_init, signal='filetree:init')
 dispatcher.connect(filetree_expanded, signal='filetree:expanded')
@@ -141,3 +155,4 @@ dispatcher.connect(get_untitled_filename, signal='filetree:get_untitled_file')
 dispatcher.connect(create_new_file, signal='filetree:create_new_file')
 dispatcher.connect(get_untitled_dir, signal='filetree:get_untitled_dir')
 dispatcher.connect(create_new_dir, signal='filetree:create_new_dir')
+dispatcher.connect(delete_files, signal='filetree:delete_files')
