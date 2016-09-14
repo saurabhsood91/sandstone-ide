@@ -3,6 +3,7 @@
 angular.module('sandstone.filebrowser')
 .controller('FilebrowserController', ['$rootScope', 'FileService', '$scope', 'FilesystemService', '$modal', 'BroadcastService', function($rootScope, FileService, $scope, FilesystemService, $modal, BroadcastService){
   var self = this;
+  var scope = $scope;
 
   self.treeData = {
     filetreeContents: [],
@@ -22,6 +23,23 @@ angular.module('sandstone.filebrowser')
     self.displayData = [].concat(self.fileData);
   });
 
+  $rootScope.$on('filebrowser:got_volume_info', function(e, data) {
+      scope.$apply(function() {
+          var volumeInfo = data.volume_info;
+          FileService.setVolumeInfo(volumeInfo);
+      });
+  });
+
+  $rootScope.$on('filetree:got_contents', function(e, data) {
+      scope.$apply(function() {
+        FileService.setFileData(data.contents);
+    });
+  });
+
+  $rootScope.$on('filebrowser:got_root_directory', function(e, data) {
+      FileService.setRootDirectory(data.root_dir);
+  });
+
   $scope.$watch(function(){
     return self.treeData.selectedNodes;
   }, function(node){
@@ -30,10 +48,29 @@ angular.module('sandstone.filebrowser')
         // Set the current directory
         FileService.setCurrentDirectory(node[0].filepath);
         // Get the list of files from FilesystemService
-        FilesystemService.getFiles(node[0], self.gotFiles);
+        var message = {
+            key: 'filetree:expanded',
+            data: {
+                node: node[0],
+                dirs: true
+            }
+        };
+        BroadcastService.sendMessage(message);
         // Get Root Directory
-        FilesystemService.getRootDirectory(node[0].filepath, self.gotRootDirectory);
-        FilesystemService.getVolumeInfo(node[0].filepath, self.gotVolumeInfo);
+        message = {
+            key: 'filebrowser:get_root_directory',
+            data: {
+                filepath: node[0].filepath
+            }
+        };
+        BroadcastService.sendMessage(message);
+        message = {
+            key: 'filebrowser:get_volume_info',
+            data: {
+                filepath: node[0].filepath
+            }
+        };
+        BroadcastService.sendMessage(message);
       }
     }
   });
@@ -81,19 +118,6 @@ angular.module('sandstone.filebrowser')
           }
       };
       BroadcastService.sendMessage(message);
-  };
-
-  self.gotFiles = function(data, status, headers, config) {
-    FileService.setFileData(data);
-  };
-  self.gotRootDirectory = function(data, status, headers, config) {
-    var rootDirectory = data.result;
-    FileService.setRootDirectory(rootDirectory);
-  };
-
-  self.gotVolumeInfo = function(data, status, headers, config) {
-    var volumeInfo = data.result;
-    FileService.setVolumeInfo(volumeInfo);
   };
 
   self.formDirPath = function() {

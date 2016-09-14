@@ -181,6 +181,38 @@ def paste_files(sender):
     }
     BroadcastManager.broadcast(message)
 
+def get_root_directory(sender):
+    from posixfs import PosixFS
+    filepath = sender['filepath']
+    if filepath:
+        list_of_root_dirs = PosixFS.list_root_paths()
+        root_dirs = []
+        for root in list_of_root_dirs:
+            if filepath.startswith(root):
+                root_dirs.append(root)
+        sorted(root_dirs,key=len)
+        message = {
+            'key': 'filebrowser:got_root_directory',
+            'data': {
+                'root_dir': root_dirs[0]
+            }
+        }
+        BroadcastManager.broadcast(message)
+
+def get_volume_info(sender):
+    from posixfs import PosixFS
+    filepath = sender['filepath']
+    if filepath:
+        volume_info = PosixFS.get_volume_info(filepath)
+        message = {
+            'key': 'filebrowser:got_volume_info',
+            'data': {
+                'volume_info': volume_info
+            }
+        }
+        BroadcastManager.broadcast(message)
+
+
 # Connect signals
 dispatcher.connect(filetree_init, signal='filetree:init')
 dispatcher.connect(filetree_expanded, signal='filetree:expanded')
@@ -191,3 +223,5 @@ dispatcher.connect(create_new_dir, signal='filetree:create_new_dir')
 dispatcher.connect(delete_files, signal='filetree:delete_files')
 dispatcher.connect(rename_file, signal='filetree:rename')
 dispatcher.connect(paste_files, signal='filetree:paste_files')
+dispatcher.connect(get_root_directory, signal='filebrowser:get_root_directory')
+dispatcher.connect(get_volume_info, signal='filebrowser:get_volume_info')
