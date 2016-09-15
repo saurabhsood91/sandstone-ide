@@ -9,6 +9,7 @@ describe('Filebrowser', function() {
   var $compile;
   var modal;
   var rootScope;
+  var mockFileService;
 
   var mockModal = {
     result: {
