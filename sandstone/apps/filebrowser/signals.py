@@ -4,6 +4,7 @@ import json
 import tornado.escape
 from sandstone.lib.websocket_client import WebSocketClient
 from sandstone.lib.broadcast.manager import BroadcastManager
+from sandstone.lib.broadcast.message import BroadcastMessage
 import os
 
 # TODO This seems a little redundant
@@ -30,9 +31,11 @@ def filetree_init(sender):
             'root_dirs': root_nodes
         }
     }
-    # ws = WebSocketClient(data=message)
-    # ws.connect('ws://localhost:8888/messages')
-    BroadcastManager.broadcast(message)
+    try:
+        bmsg = BroadcastMessage.create_from_dict(message)
+    except BroadcastMessage.MessageValidationError:
+        return
+    BroadcastManager.broadcast(bmsg)
 
 def filetree_expanded(sender):
     from posixfs import PosixFS
@@ -68,7 +71,11 @@ def filetree_expanded(sender):
             'node': filenode
         }
     }
-    BroadcastManager.broadcast(message)
+    try:
+        bmsg = BroadcastMessage.create_from_dict(message)
+    except BroadcastMessage.MessageValidationError:
+        return
+    BroadcastManager.broadcast(bmsg)
 
 def get_untitled_filename(sender):
     from posixfs import PosixFS
@@ -87,7 +94,11 @@ def get_untitled_filename(sender):
                 'filepath': newFilePath
             }
         }
-        BroadcastManager.broadcast(message)
+    try:
+        bmsg = BroadcastMessage.create_from_dict(message)
+    except BroadcastMessage.MessageValidationError:
+        return
+    BroadcastManager.broadcast(bmsg)
 
 def create_new_file(sender):
     from posixfs import PosixFS
@@ -100,7 +111,11 @@ def create_new_file(sender):
                 'filepath': created_filepath
             }
         }
-        BroadcastManager.broadcast(message)
+    try:
+        bmsg = BroadcastMessage.create_from_dict(message)
+    except BroadcastMessage.MessageValidationError:
+        return
+    BroadcastManager.broadcast(bmsg)
 
 def get_untitled_dir(sender):
     from posixfs import PosixFS
@@ -119,7 +134,11 @@ def get_untitled_dir(sender):
                 'dirpath': newDirPath
             }
         }
-        BroadcastManager.broadcast(message)
+    try:
+        bmsg = BroadcastMessage.create_from_dict(message)
+    except BroadcastMessage.MessageValidationError:
+        return
+    BroadcastManager.broadcast(bmsg)
 
 def create_new_dir(sender):
     from posixfs import PosixFS
@@ -132,7 +151,11 @@ def create_new_dir(sender):
                 'dirpath': created_dirpath
             }
         }
-        BroadcastManager.broadcast(message)
+    try:
+        bmsg = BroadcastMessage.create_from_dict(message)
+    except BroadcastMessage.MessageValidationError:
+        return
+    BroadcastManager.broadcast(bmsg)
 
 def delete_files(sender):
     from posixfs import PosixFS
@@ -146,7 +169,11 @@ def delete_files(sender):
             'files': files_to_delete
         }
     }
-    BroadcastManager.broadcast(message)
+    try:
+        bmsg = BroadcastMessage.create_from_dict(message)
+    except BroadcastMessage.MessageValidationError:
+        return
+    BroadcastManager.broadcast(bmsg)
 
 def rename_file(sender):
     from posixfs import PosixFS
@@ -166,7 +193,11 @@ def rename_file(sender):
             'newpath': newpath
         }
     }
-    BroadcastManager.broadcast(message)
+    try:
+        bmsg = BroadcastMessage.create_from_dict(message)
+    except BroadcastMessage.MessageValidationError:
+        return
+    BroadcastManager.broadcast(bmsg)
 
 def paste_files(sender):
     from posixfs import PosixFS
@@ -179,7 +210,11 @@ def paste_files(sender):
         'key': 'filetree:files_pasted',
         'data': {}
     }
-    BroadcastManager.broadcast(message)
+    try:
+        bmsg = BroadcastMessage.create_from_dict(message)
+    except BroadcastMessage.MessageValidationError:
+        return
+    BroadcastManager.broadcast(bmsg)
 
 # Connect signals
 dispatcher.connect(filetree_init, signal='filetree:init')
