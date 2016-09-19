@@ -4,7 +4,10 @@ import json
 import tornado.escape
 from sandstone.lib.websocket_client import WebSocketClient
 from sandstone.lib.broadcast.manager import BroadcastManager
+<<<<<<< HEAD
 from sandstone.lib.broadcast.message import BroadcastMessage
+=======
+>>>>>>> 8936487c3e59a30daf5372d8c32f22c4161a8c38
 import os
 
 # TODO This seems a little redundant
