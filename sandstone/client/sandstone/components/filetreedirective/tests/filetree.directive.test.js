@@ -270,7 +270,7 @@ describe('sandstone.filetree', function() {
             });
             expect(isolateScope.updateFiletree).toHaveBeenCalled();
         });
-        it('addNodeToFiletree', function() {
+        it('addNode', function() {
             isolateScope.describeSelection(isolateScope.treeData.filetreeContents[0], true);
             isolateScope.getDirContents(isolateScope.treeData.filetreeContents[0], true);
 
@@ -291,6 +291,26 @@ describe('sandstone.filetree', function() {
             isolateScope.addNode(node_2);
             expect(isolateScope.treeData.filetreeContents[0].children[0].children.length).toBe(2);
 
+        });
+        it('removeNode', function() {
+            isolateScope.describeSelection(isolateScope.treeData.filetreeContents[0], true);
+            isolateScope.getDirContents(isolateScope.treeData.filetreeContents[0], true);
+
+            var node_1 = {
+                'filepath': '/home/user/dir1',
+                'filename': 'dir',
+                'dirname': '/home/user',
+                'type': 'file'
+            };
+            var node_2 = {
+                'filepath': '/home/user/file1',
+                'filename': 'dir',
+                'dirname': '/home/user',
+                'type': 'file'
+            };
+            isolateScope.removeNode(node_1);
+            isolateScope.removeNode(node_2)
+            expect(isolateScope.treeData.filetreeContents[0].children.length).toBe(1);
         });
       });
       describe('directive', function() {
