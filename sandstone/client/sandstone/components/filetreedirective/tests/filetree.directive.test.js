@@ -282,7 +282,7 @@ describe('sandstone.filetree', function() {
             };
             var node_2 = {
                 'filepath': '/home/user/dir1/file2',
-                'filename': 'file1',
+                'filename': 'file2',
                 'dirname': '/home/user/dir1',
                 'type': 'file'
             };
@@ -298,19 +298,28 @@ describe('sandstone.filetree', function() {
 
             var node_1 = {
                 'filepath': '/home/user/dir1',
-                'filename': 'dir',
+                'filename': 'dir1',
                 'dirname': '/home/user',
-                'type': 'file'
+                'type': 'dir'
             };
             var node_2 = {
                 'filepath': '/home/user/file1',
-                'filename': 'dir',
+                'filename': 'file1',
                 'dirname': '/home/user',
                 'type': 'file'
             };
+
+            var nonexistentNode = {
+                'filepath': '/home/user/file12',
+                'filename': 'file12',
+                'dirname': '/home/user',
+                'type': 'file'
+            }
+
             isolateScope.removeNode(node_1);
             isolateScope.removeNode(node_2)
-            expect(isolateScope.treeData.filetreeContents[0].children.length).toBe(1);
+            isolateScope.removeNode(nonexistentNode);
+            expect(isolateScope.treeData.filetreeContents[0].children.length).toBe(0);
         });
       });
       describe('directive', function() {

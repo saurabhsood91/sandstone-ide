@@ -70,7 +70,12 @@ angular.module('sandstone.filetreedirective', [])
       self.removeNode = function(node) {
           var parentNode = self.getParentNode(node);
           if(parentNode) {
-              parentNode.children.splice(node, 1);
+              var nodeToBeRemoved = parentNode.children.filter(function(el) {
+                  return el.filepath === node.filepath;
+              });
+              if(nodeToBeRemoved) {
+                  parentNode.children.splice(parentNode.children.indexOf(nodeToBeRemoved[0]), 1);  
+              }
           }
       };
 
