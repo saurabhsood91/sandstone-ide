@@ -29,6 +29,51 @@ angular.module('sandstone.filetreedirective', [])
         self.treeData.filetreeContents = data;
       };
 
+      self.getParentNode = function(node) {
+          // Depth First Search to find the parent node for a given node
+          var s = [];
+          self.treeData.filetreeContents.forEach(function(element) {
+              s.push(element);
+          });
+          var isFound = false;
+          var parentNode = null;
+
+          while(!isFound || s.length == 0) {
+              // Pop the first element of the array
+              var currentElement = s.shift();
+              // Base case
+              if(currentElement.filepath == node.dirname) {
+                  isFound = true;
+                  parentNode = currentElement;
+              } else if(currentElement.type == 'dir') {
+                  if(node.dirname.indexOf(currentElement.filepath) != -1) {
+                      // Push children of elements on stack
+                      currentElement.children.forEach(function(child) {
+                          // Prepend to stack if directory
+                          if(child.type == 'dir') {
+                              s.unshift(child);
+                          }
+                      });
+                  }
+              }
+          }
+          return parentNode;
+      };
+
+      self.addNode = function(node) {
+          var parentNode = self.getParentNode(node);
+          if(parentNode) {
+              parentNode.children.push(node);
+          }
+      };
+
+      self.removeNode = function(node) {
+          var parentNode = self.getParentNode(node);
+          if(parentNode) {
+              parentNode.splice(node, 1);
+          }
+      };
+
       self.initializeFiletree = function () {
         if(self.leafLevel == "file") {
           FilesystemService.getFiles('', self.populateTreeData);
