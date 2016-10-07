@@ -64,6 +64,9 @@ angular.module('sandstone.filetreedirective', [])
           var parentNode = self.getParentNode(node);
           if(parentNode) {
               parentNode.children.push(node);
+              if(node.type == 'dir') {
+                  node.children = [];
+              }
           }
       };
 
@@ -74,7 +77,7 @@ angular.module('sandstone.filetreedirective', [])
                   return el.filepath === node.filepath;
               });
               if(nodeToBeRemoved) {
-                  parentNode.children.splice(parentNode.children.indexOf(nodeToBeRemoved[0]), 1);  
+                  parentNode.children.splice(parentNode.children.indexOf(nodeToBeRemoved[0]), 1);
               }
           }
       };
@@ -286,9 +289,14 @@ angular.module('sandstone.filetreedirective', [])
           if(self.leafLevel == "dir") {
             FilesystemService.getFolders(node, self.populatetreeContents);
           } else if(self.leafLevel == "file") {
-            FilesystemService.getFiles(node, self.populatetreeContents);
+            FilesystemService.getFiles(node, self.populateDirContents);
           }
         }
+      };
+      self.populateDirContents = function(data, status, headers, config, node) {
+          for(var i = 0; i < data.length; i++) {
+              self.addNode(data[i]);
+          }
       };
     }
   ]};
