@@ -1,20 +1,3 @@
-class FilesystemObject:
-    """
-    This object standardizes the representation of filesystem objects handled by
-    the filesystem REST API. FilesystemObject handles validation, as well as
-    serialization.
-    """
-    class ObjectValidationError(Exception):
-        pass
-
-    def __init__(self, **kwargs):
-        obj_fp = kwargs.get('filepath', None)
-        obj_type = kwargs.get('type', None)
-        if not obj_fp and obj_type:
-            raise self.MessageValidationError(
-                "'filepath' and 'type' must both be defined"
-            )
-
 class FilesystemBaseClass:
     """
     Base class inherited by all filesystem interfaces. The required methods here

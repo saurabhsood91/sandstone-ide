@@ -20,6 +20,7 @@ setup(
         'tornado>=4',
         'terminado',
         'watchdog',
+        'cerberus'
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
