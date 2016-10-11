@@ -4,7 +4,24 @@ class FilesystemBaseClass:
     are used by the filesystem REST API.
     """
 
-    def file_exists(self, filepath):
+    fs_type = None
+
+    def get_volume_details(self, volume_path):
+        raise NotImplementedError('Method not implemented')
+
+    def get_groups(self, volume_path):
+        raise NotImplementedError('Method not implemented')
+
+    def get_file_details(self, filepath):
+        raise NotImplementedError('Method not implemented')
+
+    def get_directory_details(self, filepath):
+        raise NotImplementedError('Method not implemented')
+
+    def exists(self, filepath):
+        raise NotImplementedError('Method not implemented')
+
+    def get_type_from_path(self, filepath):
         raise NotImplementedError('Method not implemented')
 
     def create_file(self, filepath):
@@ -16,44 +33,23 @@ class FilesystemBaseClass:
     def update_file(self, filepath, content):
         raise NotImplementedError('Method not implemented')
 
-    def delete_file(self, filepath):
+    def delete(self, filepath):
         raise NotImplementedError('Method not implemented')
 
     def create_directory(self, filepath):
         raise NotImplementedError('Method not implemented')
 
-    def move_file(self, origpath, newpath):
+    def move(self, origpath, newpath):
         raise NotImplementedError('Method not implemented')
 
-    def copy_file(self, origpath, newpath):
+    def copy(self, origpath, newpath):
         raise NotImplementedError('Method not implemented')
 
-    def rename_file(self, origpath, newpath):
+    def rename(self, origpath, newpath):
         raise NotImplementedError('Method not implemented')
 
-    def list_root_paths(self, **kwargs):
+    def update_permisions(self, filepath, perm_string):
         raise NotImplementedError('Method not implemented')
 
-    def get_permissions(self, perm_string):
-        raise NotImplementedError('Method not implemented')
-
-    def get_dir_contents(self, dirpath):
-        raise NotImplementedError('Method not implemented')
-
-    def get_dir_folders(self, dirpath):
-        raise NotImplementedError('Method not implemented')
-
-    def change_permisions(self, filepath, perm_string):
-        raise NotImplementedError('Method not implemented')
-
-    def get_groups(self,a):
-        raise NotImplementedError('Method not implemented')
-
-    def change_group(self, filepath, group_name):
-        raise NotImplementedError('Method not implemented')
-
-    def get_volume_info(self, filepath):
-        raise NotImplementedError('Method not implemented')
-
-    def get_size(self, filepath):
+    def update_group(self, filepath, new_group):
         raise NotImplementedError('Method not implemented')

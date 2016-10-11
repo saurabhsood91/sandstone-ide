@@ -1,6 +1,12 @@
+import copy
 import cerberus
 
 
+
+def extend_schema(addenda):
+    base_schema = copy.deepcopy(BaseObject.schema)
+    base_schema.update(addenda)
+    return base_schema
 
 class BaseObject:
     """
@@ -19,16 +25,6 @@ class BaseObject:
         'name': {
             'type': 'string'
         },
-        'owner': {
-            'type': 'string'
-        },
-        'group': {
-            'type': 'string'
-        },
-        'permissions': {
-            'type': 'string',
-            'regex': '^([r-][w-][x-]){3}$'
-        },
         'size': {
             'type': 'string',
             'regex': '^([\d]+(.[\d]+)?[bKMGT])$'
@@ -38,10 +34,9 @@ class BaseObject:
     def __init__(self, *args, **kwargs):
         self.validator = cerberus.Validator(self.schema,allow_unknown=True)
         # Validate kwargs, then assign as members of instance
-        try:
-            self.validator.validate(kwargs)
-        except DocumentError:
-            raise ValidationError('Arguments do not match schema.')
+        if not self.validator.validate(kwargs):
+            import pdb; pdb.set_trace()
+            raise self.ValidationError('Arguments do not match schema.')
         for k in kwargs.keys():
             setattr(self, k, kwargs.pop(k))
 
@@ -51,7 +46,7 @@ class VolumeObject(BaseObject):
     the filesystem REST API.
     """
 
-    schema = BaseObject.schema.update({
+    schema = extend_schema({
         'type': {
             'type': 'string',
             'allowed': ['volume']
@@ -63,6 +58,10 @@ class VolumeObject(BaseObject):
             'type': 'string'
         },
         'used': {
+            'type': 'string',
+            'regex': '^([\d]+(.[\d]+)?[bKMGT])$'
+        },
+        'available': {
             'type': 'string',
             'regex': '^([\d]+(.[\d]+)?[bKMGT])$'
         },
@@ -79,15 +78,28 @@ class FilesystemObject(BaseObject):
     the filesystem REST API.
     """
 
-    schema = BaseObject.schema.update({
+    schema = extend_schema({
         'type': {
             'type': 'string',
             'allowed': ['file','directory']
+        },
+        'dirpath': {
+            'type': 'string'
         },
         'filepath': {
             'type': 'string'
         },
         'volume': {
             'type': 'string'
+        },
+        'owner': {
+            'type': 'string'
+        },
+        'group': {
+            'type': 'string'
+        },
+        'permissions': {
+            'type': 'string',
+            'regex': '^([r-][w-][x-]){3}$'
         }
     })
