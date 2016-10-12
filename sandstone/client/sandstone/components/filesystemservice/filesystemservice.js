@@ -20,7 +20,7 @@ angular.module('sandstone.filesystemservice', [])
                 }
             })
             .success(function(data, status, headers, config){
-                callback(data.data, status, headers, config, node);
+                callback(data, status, headers, config, node);
             })
             .error(function(data, status, headers, config){
                 $log.error('Failed to get files');

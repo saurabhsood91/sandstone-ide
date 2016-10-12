@@ -170,13 +170,7 @@ angular.module('sandstone.filetreedirective', [])
       };
 
       self.populateDirData = function(data, status, headers, config, node) {
-          console.log(data);
-          data.forEach(function(childNode) {
-              if(childNode.type === 'directory') {
-                  childNode.children = [];
-              }
-              node.children.push(childNode);
-          });
+          node.children = data.contents;
       };
 
       self.getDirContents = function (node, expanded) {
