@@ -28,7 +28,7 @@ class PosixFS(FilesystemBaseClass):
         details = {
             'type': 'volume',
             'name': volume_path,
-            'fs_type': fs_type
+            'fs_type': self.fs_type
         }
         # get usage details
         p = subprocess.Popen(['df', '-h', filepath], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
