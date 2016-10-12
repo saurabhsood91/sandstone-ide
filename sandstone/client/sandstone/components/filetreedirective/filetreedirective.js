@@ -97,7 +97,7 @@ angular.module('sandstone.filetreedirective', [])
       self.treeOptions = {
         multiSelection: true,
         isLeaf: function(node) {
-          return node.type !== 'dir' && node.type !== 'volume';
+          return node.type !== 'directory' && node.type !== 'volume';
         },
         injectClasses: {
           iExpanded: "filetree-icon fa fa-caret-down",
@@ -117,7 +117,7 @@ angular.module('sandstone.filetreedirective', [])
         self.selectionDesc.noSelections = self.treeData.selectedNodes.length === 0;
         var dirSelected = false;
         for (var i in self.treeData.selectedNodes) {
-          if (self.treeData.selectedNodes[i].type==='dir') {
+          if (self.treeData.selectedNodes[i].type==='directory') {
             dirSelected = true;
           }
         }
@@ -170,8 +170,11 @@ angular.module('sandstone.filetreedirective', [])
       };
 
       self.populateDirData = function(data, status, headers, config, node) {
-          console.log(data[0]);
+          console.log(data);
           data.forEach(function(childNode) {
+              if(childNode.type === 'directory') {
+                  childNode.children = [];
+              }
               node.children.push(childNode);
           });
       };
