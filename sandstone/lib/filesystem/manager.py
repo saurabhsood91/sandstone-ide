@@ -4,7 +4,7 @@ from sandstone import settings
 
 
 def format_volume_paths():
-    volume_patterns = settings.FILESYSTEM_ROOT_DIRECTORIES
+    volume_patterns = settings.VOLUMES
     formatted_patterns = []
     for patt in volume_patterns:
         fmt = os.path.expandvars(patt)

@@ -28,7 +28,10 @@ class VolumeHandler(BaseHandler,FSMixin):
             res = res.to_dict()
         # Otherwise list volumes
         else:
-            res = self.volume_paths
+            res = []
+            for vp in self.volume_paths:
+                vd = self.fs.get_volume_details(vp)
+                res.append(vd.to_dict())
 
         self.write(res)
 
