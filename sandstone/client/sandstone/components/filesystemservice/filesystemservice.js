@@ -7,34 +7,45 @@ angular.module('sandstone.filesystemservice', [])
   return {
     // Get all files for a particular node
     getFiles: function(node, callback) {
-      $http
-        .get('/filebrowser/filetree/a/dir', {
-          params: {
-            dirpath: node.filepath
-          }
-        })
-        .success(function(data, status, headers, config){
-          callback(data, status, headers, config, node);
-        })
-        .error(function(data, status, headers, config){
-          $log.error('Failed to get files');
-        });
+        var url;
+        if(node.type === 'volume') {
+            url = '/a/filesystem/volumes/' + node.name + '/directories/' + node.name + '/';
+        } else {
+            url = '/a/filesystem/volumes/' + node.volume + '/directories/' + node.filepath + '/';
+        }
+        $http
+            .get(url, {
+                params: {
+                    filepath: node.filepath
+                }
+            })
+            .success(function(data, status, headers, config){
+                callback(data.data, status, headers, config, node);
+            })
+            .error(function(data, status, headers, config){
+                $log.error('Failed to get files');
+            });
     },
     // Get all the folders for a particular node
     getFolders: function(node, callback) {
-      $http
-        .get('/filebrowser/filetree/a/dir', {
-          params: {
-            dirpath: node.filepath,
-            folders: 'true'
-          }
-        })
-        .success(function(data, status, headers, config){
-          callback(data, status, headers, config, node);
-        })
-        .error(function(data, status, headers, config){
-          $log.error('Failed to get folders');
-        });
+        var url = '/a/filesystem/volumes/' + node.volume + '/directories/' + node.filepath + '/';
+        $http
+            .get(url, {
+                params: {
+                    filepath: node.filepath
+                }
+            })
+            .success(function(data, status, headers, config){
+                // Filter the folders
+                var folders = data.filter(function(item) {
+                    return item.type === 'dir';
+                });
+
+                callback(folders, status, headers, config, node);
+            })
+            .error(function(data, status, headers, config){
+                $log.error('Failed to get folders');
+            });
     },
     // Returns the name of the next untitled file on filesystem
     getNextUntitledFile: function(selectedDir, callback) {
@@ -227,6 +238,18 @@ angular.module('sandstone.filesystemservice', [])
       .success(function(data, status, headers, config){
         callback(data, status, headers, config);
       });
+    },
+    getVolumes: function(callback) {
+        $http({
+            url: '/a/filesystem/volumes/',
+            method: 'GET',
+            params: {
+                _xsrf: getCookie('_xsrf')
+            }
+        })
+        .success(function(data, status, headers, config) {
+            callback(data.data);
+        });
     },
     // Get Volume Info
     getVolumeInfo: function(filepath, callback) {
