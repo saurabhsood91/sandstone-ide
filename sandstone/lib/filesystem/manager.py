@@ -29,7 +29,7 @@ class VolumeManager:
         filepath = os.path.abspath(filepath)
         matches = []
         for volume in cls.volumes:
-            if filepath.startswith(volume):
+            if filepath.startswith(os.path.abspath(volume)):
                 matches.append(volume)
         if matches:
             # return longest match

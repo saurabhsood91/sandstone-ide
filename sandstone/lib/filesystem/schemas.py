@@ -14,6 +14,7 @@ class BaseObject:
     Uses cerberus for data validation. Provides serializaiton and deserialization
     methods.
     """
+
     class ValidationError(Exception):
         pass
 
@@ -35,7 +36,7 @@ class BaseObject:
         self.validator = cerberus.Validator(self.schema,allow_unknown=True)
         # Validate kwargs, then assign as members of instance
         if not self.validator.validate(kwargs):
-            import pdb; pdb.set_trace()
+            print kwargs
             raise self.ValidationError('Arguments do not match schema.')
         for k in kwargs.keys():
             setattr(self, k, kwargs.pop(k))

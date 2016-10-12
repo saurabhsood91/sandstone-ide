@@ -24,13 +24,16 @@ class FilesystemBaseClass:
     def get_type_from_path(self, filepath):
         raise NotImplementedError('Method not implemented')
 
+    def get_size(self, filepath):
+        raise NotImplementedError('Method not implemented')
+
     def create_file(self, filepath):
         raise NotImplementedError('Method not implemented')
 
     def read_file(self, filepath):
         raise NotImplementedError('Method not implemented')
 
-    def update_file(self, filepath, content):
+    def update_file(self, filepath, content, dir_sizes):
         raise NotImplementedError('Method not implemented')
 
     def delete(self, filepath):

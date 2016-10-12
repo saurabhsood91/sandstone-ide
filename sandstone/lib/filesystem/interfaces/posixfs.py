@@ -90,7 +90,7 @@ class PosixFS(FilesystemBaseClass):
         file_details = FilesystemObject(**details)
         return file_details
 
-    def get_directory_details(self, filepath, contents=True):
+    def get_directory_details(self, filepath, contents=True, dir_sizes=False):
         filepath = os.path.abspath(filepath)
         dirname, name = os.path.split(filepath)
         volpath = VolumeManager.get_volume_from_path(filepath)
@@ -115,29 +115,20 @@ class PosixFS(FilesystemBaseClass):
             # the directory details
             ls_det = self._parse_ls_line(lines[0])
             details.update(ls_det)
-            # get human-readable sizes for sub dirs
-            allpath = os.path.join(filepath,'*')
-            p = subprocess.Popen('du -hs {}'.format(allpath),shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-            out, err = p.communicate()
-            sizes = {}
-            entries = out.split('\n')[:-1]
             # directory contents
             contents = []
-            for e in entries:
-                v, k = e.split('\t')
-                sizes[k] = v
-
             for line in lines[2:-1]:
                 line_details = self._parse_ls_line(line)
-                fp = line.split()[-1]
-                name = fp.replace(filepath,'')
+                name = line.split()[-1]
+                fp = os.path.join(filepath,name)
                 line_details.update({
                     'name': name,
                     'dirpath': filepath,
                     'volume': volpath,
                     'filepath': fp
                 })
-                line_details['size'] = sizes[fp]
+                if dir_sizes and line_details['type'] == 'directory':
+                    line_details['size'] = self.get_size(fp)
                 file_details = FilesystemObject(**line_details)
                 contents.append(file_details)
 
@@ -155,6 +146,16 @@ class PosixFS(FilesystemBaseClass):
         if os.path.isdir(filepath):
             return 'directory'
         return 'file'
+
+    def get_size(self, filepath):
+        filepath = os.path.abspath(filepath)
+        p = subprocess.Popen(['du','-hs',filepath],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        out, err = p.communicate()
+        out = out.strip()
+        size, fp = out.split('\t')
+        if not size[-1].isalpha():
+            size += 'b'
+        return size
 
     def create_file(self, filepath):
         filepath = os.path.abspath(filepath)
