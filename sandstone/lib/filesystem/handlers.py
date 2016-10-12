@@ -112,9 +112,13 @@ class FileHandler(BaseHandler,FSMixin):
             raise tornado.web.HTTPError(400)
 
         if action['action'] == 'update_group':
-            pass
+            newgrp = action['data']['group']
+            self.fs.update_group(filepath,newgrp)
+            self.write({'msg':'Updated group for {}'.format(filepath)})
         elif action['action'] == 'update_permissions':
-            pass
+            newperms = action['data']['permissions']
+            self.fs.update_permisions(filepath,newperms)
+            self.write({'msg':'Updated permissions for {}'.format(filepath)})
 
     @sandstone.lib.decorators.authenticated
     def delete(self, filepath=None):
@@ -184,9 +188,13 @@ class DirectoryHandler(BaseHandler,FSMixin):
             raise tornado.web.HTTPError(400)
 
         if action['action'] == 'update_group':
-            pass
+            newgrp = action['data']['group']
+            self.fs.update_group(filepath,newgrp)
+            self.write({'msg':'Updated group for {}'.format(filepath)})
         elif action['action'] == 'update_permissions':
-            pass
+            newperms = action['data']['permissions']
+            self.fs.update_permisions(filepath,newperms)
+            self.write({'msg':'Updated permissions for {}'.format(filepath)})
 
     @sandstone.lib.decorators.authenticated
     def delete(self, filepath=None):
