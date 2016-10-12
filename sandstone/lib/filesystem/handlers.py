@@ -113,7 +113,7 @@ class FileHandler(BaseHandler,FSMixin):
             self.write({'msg':'Updated group for {}'.format(filepath)})
         elif action['action'] == 'update_permissions':
             newperms = action['data']['permissions']
-            self.fs.update_permisions(filepath,newperms)
+            self.fs.update_permissions(filepath,newperms)
             self.write({'msg':'Updated permissions for {}'.format(filepath)})
 
     @sandstone.lib.decorators.authenticated
@@ -180,7 +180,7 @@ class DirectoryHandler(BaseHandler,FSMixin):
             self.write({'msg':'Updated group for {}'.format(filepath)})
         elif action['action'] == 'update_permissions':
             newperms = action['data']['permissions']
-            self.fs.update_permisions(filepath,newperms)
+            self.fs.update_permissions(filepath,newperms)
             self.write({'msg':'Updated permissions for {}'.format(filepath)})
 
     @sandstone.lib.decorators.authenticated

@@ -51,7 +51,7 @@ class FilesystemBaseClass:
     def rename(self, origpath, newpath):
         raise NotImplementedError('Method not implemented')
 
-    def update_permisions(self, filepath, perm_string):
+    def update_permissions(self, filepath, perm_string):
         raise NotImplementedError('Method not implemented')
 
     def update_group(self, filepath, new_group):

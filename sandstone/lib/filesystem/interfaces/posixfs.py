@@ -74,8 +74,10 @@ class PosixFS(FilesystemBaseClass):
         return details
 
     def get_file_details(self, filepath):
-        volpath = VolumeManager.get_volume_from_path(filepath)
         filepath = os.path.abspath(filepath)
+        if not self.exists(filepath):
+            raise OSError('File not found')
+        volpath = VolumeManager.get_volume_from_path(filepath)
         dirname, name = os.path.split(filepath)
         details = {
             'volume': volpath,
@@ -92,6 +94,8 @@ class PosixFS(FilesystemBaseClass):
 
     def get_directory_details(self, filepath, contents=True, dir_sizes=False):
         filepath = os.path.abspath(filepath)
+        if not self.exists(filepath):
+            raise OSError('File not found')
         dirname, name = os.path.split(filepath)
         volpath = VolumeManager.get_volume_from_path(filepath)
         details = {
@@ -143,6 +147,9 @@ class PosixFS(FilesystemBaseClass):
         return exists
 
     def get_type_from_path(self, filepath):
+        filepath = os.path.abspath(filepath)
+        if not self.exists(filepath):
+            raise OSError('File not found')
         if os.path.isdir(filepath):
             return 'directory'
         return 'file'
@@ -208,10 +215,42 @@ class PosixFS(FilesystemBaseClass):
         newpath = os.path.abspath(newpath)
         os.rename(origpath,newpath)
 
-    def update_permisions(filepath, perm_string):
-        os.chmod(filepath, int(perm_string, 8))
+    def _permissions_to_octal(self, perm_string):
+        try:
+            perm_octal = int(perm_string, 8)
+            # Already an octal string
+            return perm_string
+        except ValueError:
+            pass
+        perms = []
+        count = 0
+        p = 0
+        for i in perm_string[1:]:
+            if i == 'r':
+                p += 4
+            elif i == 'w':
+                p += 2
+            elif i == 'x':
+                p += 1
+            if count == 2:
+                perms.append('%d' % p)
+                count = 0
+                p = 0
+            else:
+                count += 1
+        return ''.join(perms)
+
+    def update_permissions(self, filepath, perm_string):
+        filepath = os.path.abspath(filepath)
+        if not self.exists(filepath):
+            raise OSError('File not found')
+        perm_octal = self._permissions_to_octal(perm_string)
+        os.chmod(filepath, int(perm_octal, 8))
 
     def update_group(self, filepath, group_name):
+        filepath = os.path.abspath(filepath)
+        if not self.exists(filepath):
+            raise OSError('File not found')
         # Get uid
         uid = os.stat(filepath).st_uid
         # Get GID of new group
