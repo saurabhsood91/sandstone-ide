@@ -72,13 +72,11 @@ class FileHandler(BaseHandler,FSMixin):
     """
 
     @sandstone.lib.decorators.authenticated
-    def get(self, filepath=None):
+    def get(self, volume_path, filepath):
         """
         Get file details for the specified file.
         """
-        if not filepath:
-            raise tornado.web.HTTPError(400)
-        elif not self.fs.exists(filepath):
+        if not self.fs.exists(filepath):
             raise tornado.web.HTTPError(404)
 
         res = self.fs.get_file_details(filepath)
@@ -86,25 +84,20 @@ class FileHandler(BaseHandler,FSMixin):
         self.write(res)
 
     @sandstone.lib.decorators.authenticated
-    def post(self, filepath=None):
+    def post(self, volume_path, filepath):
         """
         Create a new file at the specified path.
         """
-        if not filepath:
-            raise tornado.web.HTTPError(400)
-
         self.fs.create_file(filepath)
         self.write({'msg':'File created at {}'.format(filepath)})
 
     @sandstone.lib.decorators.authenticated
-    def put(self, filepath=None):
+    def put(self, volume_path, filepath):
         """
         Change the group or permissions of the specified file. Action
         must be specified when calling this method.
         """
-        if not filepath:
-            raise tornado.web.HTTPError(400)
-        elif not self.fs.exists(filepath):
+        if not self.fs.exists(filepath):
             raise tornado.web.HTTPError(404)
 
         action = self.get_argument('action',None)
@@ -121,13 +114,11 @@ class FileHandler(BaseHandler,FSMixin):
             self.write({'msg':'Updated permissions for {}'.format(filepath)})
 
     @sandstone.lib.decorators.authenticated
-    def delete(self, filepath=None):
+    def delete(self, volume_path, filepath):
         """
         Delete the specified file.
         """
-        if not filepath:
-            raise tornado.web.HTTPError(400)
-        elif not self.fs.exists(filepath):
+        if not self.fs.exists(filepath):
             raise tornado.web.HTTPError(404)
 
         self.fs.delete_file(filepath)
@@ -141,7 +132,7 @@ class DirectoryHandler(BaseHandler,FSMixin):
     """
 
     @sandstone.lib.decorators.authenticated
-    def get(self, filepath=None):
+    def get(self, volume_path, filepath):
         """
         Get directory details for the specified file. If contents is
         set to True (default) then the directory contents will be sent
@@ -149,9 +140,7 @@ class DirectoryHandler(BaseHandler,FSMixin):
         (default=False) then du -hs will be run against subdirectories
         for accurate content sizes.
         """
-        if not filepath:
-            raise tornado.web.HTTPError(400)
-        elif not self.fs.exists(filepath):
+        if not self.fs.exists(filepath):
             raise tornado.web.HTTPError(404)
 
         contents = self.get_argument('contents', True)
@@ -162,25 +151,20 @@ class DirectoryHandler(BaseHandler,FSMixin):
         self.write(res)
 
     @sandstone.lib.decorators.authenticated
-    def post(self, filepath=None):
+    def post(self, volume_path, filepath):
         """
         Create a new directory at the specified path.
         """
-        if not filepath:
-            raise tornado.web.HTTPError(400)
-
         self.fs.create_directory(filepath)
         self.write({'msg':'Directory created at {}'.format(filepath)})
 
     @sandstone.lib.decorators.authenticated
-    def put(self, filepath=None):
+    def put(self, volume_path, filepath):
         """
         Change the group or permissions of the specified directory. Action
         must be specified when calling this method.
         """
-        if not filepath:
-            raise tornado.web.HTTPError(400)
-        elif not self.fs.exists(filepath):
+        if not self.fs.exists(filepath):
             raise tornado.web.HTTPError(404)
 
         action = self.get_argument('action',None)
@@ -197,13 +181,11 @@ class DirectoryHandler(BaseHandler,FSMixin):
             self.write({'msg':'Updated permissions for {}'.format(filepath)})
 
     @sandstone.lib.decorators.authenticated
-    def delete(self, filepath=None):
+    def delete(self, volume_path, filepath):
         """
         Delete the specified directory.
         """
-        if not filepath:
-            raise tornado.web.HTTPError(400)
-        elif not self.fs.exists(filepath):
+        if not self.fs.exists(filepath):
             raise tornado.web.HTTPError(404)
 
         self.fs.delete_directory(filepath)
@@ -215,32 +197,29 @@ class FileContentsHandler(BaseHandler, FSMixin):
     """
 
     @sandstone.lib.decorators.authenticated
-    def get(self, filepath=None):
+    def get(self, volume_path, filepath):
         """
         Get the contents of the specified file.
         """
-        if not filepath:
-            raise tornado.web.HTTPError(400)
-        elif not self.fs.exists(filepath):
+        if not self.fs.exists(filepath):
             raise tornado.web.HTTPError(404)
 
         contents = self.fs.read_file(filepath)
         self.write({'filepath':filepath,'contents': contents})
 
     @sandstone.lib.decorators.authenticated
-    def post(self, filepath=None):
+    def post(self, volume_path, filepath):
         """
         Write the given contents to the specified file. This is not
         an append, all file contents will be replaced by the contents
         given.
         """
-        if not filepath:
-            raise tornado.web.HTTPError(400)
-        elif not self.fs.exists(filepath):
+        if not self.fs.exists(filepath):
             raise tornado.web.HTTPError(404)
 
-        contents = self.get_argument('contents', None)
-        if contents == None:
+        try:
+            content = tornado.escape.json_decode(self.request.body)['content']
+        except:
             raise tornado.web.HTTPError(400)
 
         self.fs.write_file(filepath, contents)
