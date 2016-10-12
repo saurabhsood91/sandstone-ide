@@ -7,7 +7,7 @@ import logging
 from sandstone import settings
 import grp
 import subprocess
-from sandstone.lib.filesystem.base import FilesystemBaseClass
+from sandstone.lib.filesystem.interfaces.base import FilesystemBaseClass
 from sandstone.lib.filesystem.schemas import VolumeObject
 from sandstone.lib.filesystem.schemas import FilesystemObject
 from sandstone.lib.filesystem.manager import VolumeManager
@@ -171,7 +171,7 @@ class PosixFS(FilesystemBaseClass):
             content = f.read()
         return content
 
-    def update_file(self, filepath, content):
+    def write_file(self, filepath, content):
         filepath = os.path.abspath(filepath)
         if not os.path.exists(filepath):
             raise IOError

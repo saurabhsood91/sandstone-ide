@@ -208,3 +208,40 @@ class DirectoryHandler(BaseHandler,FSMixin):
 
         self.fs.delete_directory(filepath)
         self.write({'msg':'Directory deleted at {}'.format(filepath)})
+
+class FileContentsHandler(BaseHandler, FSMixin):
+    """
+    This handler provides read and write functionality for file contents.
+    """
+
+    @sandstone.lib.decorators.authenticated
+    def get(self, filepath=None):
+        """
+        Get the contents of the specified file.
+        """
+        if not filepath:
+            raise tornado.web.HTTPError(400)
+        elif not self.fs.exists(filepath):
+            raise tornado.web.HTTPError(404)
+
+        contents = self.fs.read_file(filepath)
+        self.write({'filepath':filepath,'contents': contents})
+
+    @sandstone.lib.decorators.authenticated
+    def post(self, filepath=None):
+        """
+        Write the given contents to the specified file. This is not
+        an append, all file contents will be replaced by the contents
+        given.
+        """
+        if not filepath:
+            raise tornado.web.HTTPError(400)
+        elif not self.fs.exists(filepath):
+            raise tornado.web.HTTPError(404)
+
+        contents = self.get_argument('contents', None)
+        if contents == None:
+            raise tornado.web.HTTPError(400)
+
+        self.fs.write_file(filepath, contents)
+        self.write({'msg': 'Updated file at {}'.format(filepath)})

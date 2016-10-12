@@ -33,7 +33,7 @@ class FilesystemBaseClass:
     def read_file(self, filepath):
         raise NotImplementedError('Method not implemented')
 
-    def update_file(self, filepath, content, dir_sizes):
+    def write_file(self, filepath, content, dir_sizes):
         raise NotImplementedError('Method not implemented')
 
     def delete(self, filepath):
