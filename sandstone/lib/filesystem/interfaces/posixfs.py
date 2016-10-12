@@ -31,7 +31,7 @@ class PosixFS(FilesystemBaseClass):
             'fs_type': self.fs_type
         }
         # get usage details
-        p = subprocess.Popen(['df', '-h', filepath], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = subprocess.Popen(['df', '-h', volume_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = p.communicate()
         size, used, avail, used_pct = out.split()[-5:-1]
         details.update({
