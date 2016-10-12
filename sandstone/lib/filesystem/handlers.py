@@ -46,12 +46,20 @@ class VolumeHandler(BaseHandler,FSMixin):
         if not action:
             raise tornado.web.HTTPError(400)
 
+        fp = action['data']['filepath']
+
         if action['action'] == 'move':
-            pass
+            newpath = action['data']['newpath']
+            self.fs.move(fp,newpath)
+            self.write({'msg':'File moved to {}'.format(newpath)})
         elif action['action'] == 'copy':
-            pass
+            newpath = action['data']['newpath']
+            self.fs.copy(fp,newpath)
+            self.write({'msg':'File copied to {}'.format(newpath)})
         elif action['action'] == 'rename':
-            pass
+            newpath = action['data']['newpath']
+            self.fs.rename(fp,newpath)
+            self.write({'msg':'File renamed to {}'.format(newpath)})
         else:
             raise tornado.web.HTTPError(400)
 
