@@ -33,7 +33,7 @@ class VolumeHandler(BaseHandler,FSMixin):
                 vd = self.fs.get_volume_details(vp)
                 res.append(vd.to_dict())
 
-        self.write(res)
+        self.write({'data': res})
 
     @sandstone.lib.decorators.authenticated
     def put(self, volume_path=None):
