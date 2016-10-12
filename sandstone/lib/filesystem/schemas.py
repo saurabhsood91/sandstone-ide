@@ -49,6 +49,7 @@ class BaseObject:
 
     def to_json_string(self):
         d = vars(self)
+        del d['validator']
         return tornado.escape.json_encode(d)
 
 class VolumeObject(BaseObject):
@@ -121,6 +122,7 @@ class FilesystemObject(BaseObject):
             for f in self.contents:
                 cnts.append(f.to_dict())
             d = vars(self)
+            del d['validator']
             d['contents'] = cnts
             return d
         d = vars(self)

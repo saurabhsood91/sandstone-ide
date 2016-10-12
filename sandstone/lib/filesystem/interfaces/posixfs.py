@@ -109,7 +109,7 @@ class PosixFS(FilesystemBaseClass):
             return dir_details
         else:
             # Otherwise, get dir contents
-            p = subprocess.Popen(['ls', '-lsah', filepath], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            p = subprocess.Popen(['ls','--group-directories-first','-lsah', filepath], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = p.communicate()
             lines = out.split('\n')[1:]
             # the directory details
