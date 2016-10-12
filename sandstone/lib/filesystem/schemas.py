@@ -1,5 +1,6 @@
 import copy
 import cerberus
+import tornado.escape
 
 
 
@@ -40,6 +41,15 @@ class BaseObject:
             raise self.ValidationError('Arguments do not match schema.')
         for k in kwargs.keys():
             setattr(self, k, kwargs.pop(k))
+
+    def to_dict(self):
+        d = vars(self)
+        del d['validator']
+        return d
+
+    def to_json_string(self):
+        d = vars(self)
+        return tornado.escape.json_encode(d)
 
 class VolumeObject(BaseObject):
     """
@@ -104,3 +114,19 @@ class FilesystemObject(BaseObject):
             'regex': '^([r-][w-][x-]){3}$'
         }
     })
+
+    def to_dict(self):
+        if (self.type == 'directory') and hasattr(self, 'contents'):
+            cnts = []
+            for f in self.contents:
+                cnts.append(f.to_dict())
+            d = vars(self)
+            d['contents'] = cnts
+            return d
+        d = vars(self)
+        del d['validator']
+        return d
+
+    def to_json_string(self):
+        d = self.to_dict()
+        return tornado.escape.json_encode(d)

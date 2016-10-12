@@ -25,6 +25,7 @@ class VolumeHandler(BaseHandler,FSMixin):
             if volume_path not in self.volume_paths:
                 raise tornado.web.HTTPError(404)
             res = self.fs.get_volume_details(volume_path)
+            res = res.to_dict()
         # Otherwise list volumes
         else:
             res = self.volume_paths
@@ -81,6 +82,7 @@ class FileHandler(BaseHandler,FSMixin):
             raise tornado.web.HTTPError(404)
 
         res = self.fs.get_file_details(filepath)
+        res = res.to_dict()
         self.write(res)
 
     @sandstone.lib.decorators.authenticated
@@ -152,6 +154,7 @@ class DirectoryHandler(BaseHandler,FSMixin):
         dir_sizes = self.get_argument('dir_sizes', False)
 
         res = self.fs.get_directory_details(filepath,contents=contents,dir_sizes=dir_sizes)
+        res = res.to_dict()
         self.write(res)
 
     @sandstone.lib.decorators.authenticated
