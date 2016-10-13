@@ -29,12 +29,20 @@ angular.module('sandstone.filetreedirective', [])
         self.treeData.filetreeContents = data;
       };
 
+      self.gotVolumes = function(data) {
+          data.forEach(function(element) {
+              element.children = [];
+          });
+          self.treeData.filetreeContents = data;
+      };
+
       self.initializeFiletree = function () {
-        if(self.leafLevel == "file") {
-          FilesystemService.getFiles('', self.populateTreeData);
-        } else if(self.leafLevel == "dir") {
-          FilesystemService.getFolders({filepath: ''}, self.populateTreeData);
-        }
+        // if(self.leafLevel == "file") {
+        //   FilesystemService.getFiles('', self.populateTreeData);
+        // } else if(self.leafLevel == "dir") {
+        //   FilesystemService.getFolders({filepath: ''}, self.populateTreeData);
+        // }
+        FilesystemService.getVolumes(self.gotVolumes);
         $rootScope.$on('filetree:created_file', function(e, data) {
             self.updateFiletree();
         });
@@ -89,7 +97,7 @@ angular.module('sandstone.filetreedirective', [])
       self.treeOptions = {
         multiSelection: true,
         isLeaf: function(node) {
-          return node.type !== 'dir';
+          return node.type !== 'dir' && node.type !== 'volume';
         },
         injectClasses: {
           iExpanded: "filetree-icon fa fa-caret-down",
@@ -162,6 +170,7 @@ angular.module('sandstone.filetreedirective', [])
       };
 
       self.populateDirData = function(data, status, headers, config, node) {
+          console.log(data[0]);
           data.forEach(function(childNode) {
               node.children.push(childNode);
           });
