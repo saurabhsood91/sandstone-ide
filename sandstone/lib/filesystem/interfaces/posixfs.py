@@ -156,6 +156,8 @@ class PosixFS(FilesystemBaseClass):
 
     def get_size(self, filepath):
         filepath = os.path.abspath(filepath)
+        if not self.exists(filepath):
+            raise OSError('File not found')
         p = subprocess.Popen(['du','-hs',filepath],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         out, err = p.communicate()
         out = out.strip()

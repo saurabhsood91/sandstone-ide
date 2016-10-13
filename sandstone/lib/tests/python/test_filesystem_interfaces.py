@@ -76,7 +76,35 @@ class PosixFSTestCase(unittest.TestCase):
             self.assertRaises(OSError,self.posix_fs.get_file_details,'/fake/fp')
 
     def test_get_directory_details(self):
-        pass
+        with mock.patch('sandstone.lib.filesystem.manager.VolumeManager.volumes',[self.test_dir]):
+            dp = os.path.join(self.test_dir,'testDir')
+            hp = os.path.join(self.test_dir,'.testDir')
+            fp = os.path.join(self.test_dir,'atestfile.txt')
+            fake_fp = '/does/not/exist'
+            os.mkdir(dp)
+            os.mkdir(hp)
+            open(fp,'w').close()
+
+            self.assertRaises(OSError,self.posix_fs.get_directory_details,fake_fp)
+
+            dir_details = self.posix_fs.get_directory_details(self.test_dir,contents=False)
+            self.assertTrue(isinstance(dir_details,FilesystemObject))
+            self.assertEqual(dir_details.filepath,self.test_dir)
+            self.assertFalse(hasattr(dir_details,'contents'))
+
+            dir_details = self.posix_fs.get_directory_details(self.test_dir)
+            self.assertTrue(isinstance(dir_details,FilesystemObject))
+            self.assertEqual(dir_details.filepath,self.test_dir)
+            self.assertTrue(hasattr(dir_details,'contents'))
+            self.assertTrue(isinstance(dir_details.contents[0],FilesystemObject))
+            self.assertEqual(dir_details.contents[0].filepath,dp)
+            self.assertEqual(dir_details.contents[1].filepath,hp)
+            self.assertEqual(dir_details.contents[2].filepath,fp)
+
+            dir_details = self.posix_fs.get_directory_details(self.test_dir,dir_sizes=True)
+            self.assertTrue(isinstance(dir_details,FilesystemObject))
+            self.assertEqual(dir_details.filepath,self.test_dir)
+            self.assertTrue(hasattr(dir_details,'contents'))
 
     def test_exists(self):
         abs_dp = os.path.join(self.test_dir,'testDir')
@@ -105,7 +133,23 @@ class PosixFSTestCase(unittest.TestCase):
         self.assertRaises(OSError,self.posix_fs.get_type_from_path,fake_fp)
 
     def test_get_size(self):
-        pass
+        abs_dp = os.path.join(self.test_dir,'testDir')
+        rel_fp = os.path.join(self.test_dir,'..',self.test_dir,'testfile.txt')
+        fake_fp = '/does/not/exist'
+        os.mkdir(abs_dp)
+        open(rel_fp,'w').close()
+
+        self.assertRaises(OSError,self.posix_fs.get_size,fake_fp)
+
+        size = self.posix_fs.get_size(abs_dp)
+        self.assertTrue(type(size) == str)
+        self.assertTrue(size[-1].isalpha())
+        self.assertTrue(type(float(size[:-1])) == float)
+
+        size = self.posix_fs.get_size(rel_fp)
+        self.assertTrue(type(size) == str)
+        self.assertTrue(size[-1].isalpha())
+        self.assertTrue(type(float(size[:-1])) == float)
 
     def test_create_file(self):
         abs_fp = os.path.join(self.test_dir,'test.txt')
@@ -301,82 +345,3 @@ class PosixFSTestCase(unittest.TestCase):
             self.assertEqual(file_details.group,newgrp)
 
             self.assertRaises(OSError,self.posix_fs.update_group,*['/fake/fp','testgrp'])
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    def test_get_dir_contents(self):
-        dp = os.path.join(self.test_dir,'testDir')
-        os.mkdir(dp)
-        sub_fp = os.path.join(dp,'testfile.txt')
-        open(sub_fp,'w').close()
-        fp = os.path.join(self.test_dir,'testfile.txt')
-        open(fp,'w').close()
-
-        contents = self.posix_fs.get_dir_contents(self.test_dir)
-
-        user = pwd.getpwuid(os.getuid())[0]
-        exp_contents = [
-            {
-                'size': '4.0K',
-                'perm': 'drwxrwxr-x',
-                'perm_string': '775',
-                'owner': user,
-                'group': user,
-                'filepath': dp,
-                'filename': 'testDir'
-            },
-            {
-                'size': '0 bytes',
-                'perm': '-rw-rw-r--',
-                'perm_string': '664',
-                'owner': user,
-                'group': user,
-                'filepath': fp,
-                'filename': 'testfile.txt'
-            }
-        ]
-        self.assertListEqual(contents,exp_contents)
-
-    def test_get_dir_folders(self):
-        dp = os.path.join(self.test_dir,'testDir')
-        os.mkdir(dp)
-        sub_fp = os.path.join(dp,'testfile.txt')
-        open(sub_fp,'w').close()
-        fp = os.path.join(self.test_dir,'testfile.txt')
-        open(fp,'w').close()
-
-        contents = self.posix_fs.get_dir_folders(self.test_dir)
-        exp_contents = [
-            (
-                'testDir',
-                dp+'/',
-                True
-            )
-        ]
-        self.assertEqual(contents,exp_contents)
-
-    def test_get_size_empty_directory(self):
-        self.assertEqual(self.posix_fs.get_size(self.test_dir), '4.0K')
-
-    def test_get_size_files(self):
-        tempfile_1 = os.path.join(self.test_dir, 'temp_1')
-        tempfile_2 = os.path.join(self.test_dir, 'temp_2')
-
-        with open(tempfile_1, 'w') as tmp_file:
-            tmp_file.write('Some Text')
-
-        with open(tempfile_2, 'w') as tmp_file:
-            tmp_file.write('Some More Text')
-
-        self.assertEqual(self.posix_fs.get_size(self.test_dir), '12K')
