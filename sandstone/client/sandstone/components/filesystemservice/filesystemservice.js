@@ -75,34 +75,45 @@ angular.module('sandstone.filesystemservice', [])
     },
     // Rename a file on the filesystem
     renameFile: function(newFilename, node, callback) {
-      $http({
-        url: '/filebrowser/a/fileutil',
-        method: 'POST',
-        params: {
-          _xsrf:getCookie('_xsrf'),
-          operation: 'RENAME',
-          filepath: node.filepath,
-          newFileName: newFilename
-        }
+        var url = '/a/filesystem/volumes/' + encodeURIComponent(node.volume);
+        $http({
+            url: url,
+            method: 'PUT',
+            params: {
+                _xsrf: getCookie('_xsrf'),
+                action: {
+                    action: 'rename',
+                    data: {
+                        newname: newFilename,
+                        filepath: node.filepath
+                    }
+                }
+            }
         })
-        .success(function(data, status, headers, config){
-          callback(data, status, headers, config, node);
+        .success(function(data, status, headers, config) {
+            callback(data, status, headers, config);
         });
     },
     // Paste file
-    pasteFile: function(originalPath, newPath, callback) {
-      $http({
-        url: '/filebrowser/a/fileutil',
-        method: 'POST',
-        params: {
-          _xsrf:getCookie('_xsrf'),
-          operation: 'COPY',
-          origpath: originalPath,
-          newpath: newPath
-        }
+    pasteFile: function(node, newPath, callback) {
+        console.log(node);
+        var url = '/a/filesystem/volumes/' + encodeURIComponent(node.volume);
+        $http({
+            url: url,
+            method: 'PUT',
+            params: {
+                _xsrf: getCookie('_xsrf'),
+                action: {
+                    action: 'copy',
+                    data: {
+                        newpath: newPath,
+                        filepath: node.filepath
+                    }
+                }
+            }
         })
-        .success(function(data, status, headers, config){
-          callback(data, status, headers, config);
+        .success(function(data, status, headers, config) {
+            callback(data, status, headers, config, node);
         });
     },
     // Deleting files from the filesystem
@@ -225,20 +236,6 @@ angular.module('sandstone.filesystemservice', [])
       });
     },
     // Get Root Directory for given filepath
-    getRootDirectory: function(filepath, callback) {
-      $http({
-        url: '/filebrowser/a/fileutil',
-        method: 'GET',
-        params: {
-          _xsrf:getCookie('_xsrf'),
-          operation: 'GET_ROOT_DIR',
-          filepath: filepath
-        }
-      })
-      .success(function(data, status, headers, config){
-        callback(data, status, headers, config);
-      });
-    },
     getVolumes: function(callback) {
         $http({
             url: '/a/filesystem/volumes/',
@@ -252,19 +249,18 @@ angular.module('sandstone.filesystemservice', [])
         });
     },
     // Get Volume Info
-    getVolumeInfo: function(filepath, callback) {
-      $http({
-        url: '/filebrowser/a/fileutil',
-        method: 'GET',
-        params: {
-          _xsrf:getCookie('_xsrf'),
-          operation: 'GET_VOLUME_INFO',
-          filepath: filepath
-        }
-      })
-      .success(function(data, status, headers, config){
-        callback(data, status, headers, config);
-      });
+    getVolumeInfo: function(volumeName, callback) {
+        var url = '/a/filesystem/volumes/' + volumeName;
+        $http({
+            url: url,
+            method: 'GET',
+            params: {
+                _xsrf:getCookie('_xsrf')
+            }
+        })
+        .success(function(data, status, headers, config){
+            callback(data, status, headers, config);
+        });
     }
   };
 }]);
