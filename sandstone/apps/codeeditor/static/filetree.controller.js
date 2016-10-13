@@ -108,8 +108,8 @@ angular.module('sandstone.editor')
     self.deleteModalInstance.result.then(function () {
       $log.debug('Files deleted at: ' + new Date());
       for (var i=0;i<self.treeData.selectedNodes.length;i++) {
-        var filepath = self.treeData.selectedNodes[i].filepath;
-        FilesystemService.deleteFile(filepath, self.deletedFile);
+        var node = self.treeData.selectedNodes[i];
+        FilesystemService.deleteFile(node, self.deletedFile);
         self.deleteModalInstance = null;
       }
     }, function () {

@@ -117,16 +117,17 @@ angular.module('sandstone.filesystemservice', [])
         });
     },
     // Deleting files from the filesystem
-    deleteFile: function(filepath, callback) {
-      $http({
-        url: '/filebrowser/localfiles'+filepath,
-        method: 'DELETE',
-        params: {
-          _xsrf:getCookie('_xsrf')
-          }
+    deleteFile: function(node, callback) {
+        var url = '/a/filesystem/volumes/' + encodeURIComponent(node.volume) + '/files/' + encodeURIComponent(node.filepath) + '/';
+        $http({
+            url: url,
+            method: 'DELETE',
+            params: {
+                _xsrf: getCookie('_xsrf')
+            }
         })
-        .success(function(data, status, headers, config){
-          callback(data, status, headers, config);
+        .success(function(data, status, headers, config) {
+            callback(data, status, headers, config);
         });
     },
     // Get the next duplicate from the filesystem
