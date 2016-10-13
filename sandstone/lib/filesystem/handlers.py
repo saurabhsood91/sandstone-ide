@@ -127,7 +127,7 @@ class FileHandler(BaseHandler,FSMixin):
         if not self.fs.exists(filepath):
             raise tornado.web.HTTPError(404)
 
-        self.fs.delete_file(filepath)
+        self.fs.delete(filepath)
         self.write({'msg':'File deleted at {}'.format(filepath)})
 
 class DirectoryHandler(BaseHandler,FSMixin):
@@ -195,7 +195,7 @@ class DirectoryHandler(BaseHandler,FSMixin):
         if not self.fs.exists(filepath):
             raise tornado.web.HTTPError(404)
 
-        self.fs.delete_directory(filepath)
+        self.fs.delete(filepath)
         self.write({'msg':'Directory deleted at {}'.format(filepath)})
 
 class FileContentsHandler(BaseHandler, FSMixin):
