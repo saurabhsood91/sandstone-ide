@@ -1,5 +1,6 @@
 import json
 import tornado.web
+import tornado.escape
 
 import sandstone.lib.decorators
 from sandstone import settings
@@ -47,6 +48,7 @@ class VolumeHandler(BaseHandler,FSMixin):
             raise tornado.web.HTTPError(404)
 
         action = self.get_argument('action',None)
+        action = tornado.escape.json_decode(action)
         if not action:
             raise tornado.web.HTTPError(400)
 
@@ -104,6 +106,7 @@ class FileHandler(BaseHandler,FSMixin):
             raise tornado.web.HTTPError(404)
 
         action = self.get_argument('action',None)
+        action = tornado.escape.json_decode(action)
         if not action:
             raise tornado.web.HTTPError(400)
 
@@ -171,6 +174,7 @@ class DirectoryHandler(BaseHandler,FSMixin):
             raise tornado.web.HTTPError(404)
 
         action = self.get_argument('action',None)
+        action = tornado.escape.json_decode(action)
         if not action:
             raise tornado.web.HTTPError(400)
 
