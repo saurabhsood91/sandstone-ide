@@ -244,14 +244,14 @@ class PosixFSTestCase(unittest.TestCase):
         new_dp = os.path.join(self.test_dir,'newDir')
         new_fp = os.path.join(self.test_dir,'newFile.txt')
 
-        self.assertRaises(OSError,self.posix_fs.rename,'/fake/fp',new_dp)
+        self.assertRaises(OSError,self.posix_fs.rename,'/fake/fp','newDir')
 
-        self.posix_fs.rename(abs_dp,new_dp)
+        self.posix_fs.rename(abs_dp,'newDir')
         self.assertTrue(os.path.exists(new_dp))
         self.assertTrue(os.path.exists(os.path.join(new_dp,'testfile.txt')))
         self.assertFalse(os.path.exists(abs_dp))
 
-        self.posix_fs.rename(rel_fp,new_fp)
+        self.posix_fs.rename(rel_fp,'newFile.txt')
         self.assertTrue(os.path.exists(new_fp))
         self.assertFalse(os.path.exists(rel_fp))
 
@@ -264,6 +264,9 @@ class PosixFSTestCase(unittest.TestCase):
 
         perm_string_3 = '664'
         self.assertEqual(self.posix_fs._permissions_to_octal(perm_string_3), '664')
+
+        perm_string_4 = 'rw-rw-r--'
+        self.assertEqual(self.posix_fs._permissions_to_octal(perm_string_4), '664')
 
     def test_update_permissions(self):
         dp = os.path.join(self.test_dir,'testDir')

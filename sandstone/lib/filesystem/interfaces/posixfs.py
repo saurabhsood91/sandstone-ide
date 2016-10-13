@@ -210,9 +210,10 @@ class PosixFS(FilesystemBaseClass):
         else:
             shutil.copy2(origpath,newpath)
 
-    def rename(self, origpath, newpath):
+    def rename(self, origpath, newname):
         origpath = os.path.abspath(origpath)
-        newpath = os.path.abspath(newpath)
+        dirname, name = os.path.split(origpath)
+        newpath = os.path.join(dirname,newname)
         os.rename(origpath,newpath)
 
     def _permissions_to_octal(self, perm_string):
@@ -225,7 +226,10 @@ class PosixFS(FilesystemBaseClass):
         perms = []
         count = 0
         p = 0
-        for i in perm_string[1:]:
+        if len(perm_string) == 10:
+            perm_string = perm_string[1:]
+
+        for i in perm_string:
             if i == 'r':
                 p += 4
             elif i == 'w':

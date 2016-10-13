@@ -63,9 +63,9 @@ class VolumeHandler(BaseHandler,FSMixin):
             self.fs.copy(fp,newpath)
             self.write({'msg':'File copied to {}'.format(newpath)})
         elif action['action'] == 'rename':
-            newpath = action['data']['newpath']
-            self.fs.rename(fp,newpath)
-            self.write({'msg':'File renamed to {}'.format(newpath)})
+            newname = action['data']['newname']
+            self.fs.rename(fp,newname)
+            self.write({'msg':'File renamed to {}'.format(newname)})
         else:
             raise tornado.web.HTTPError(400)
 
